@@ -27,7 +27,7 @@ public class Server {
 	HashMap <String, String> table = new HashMap <String, String>();
 	
 	public void sendMessage(DatagramPacket packet, String destinationAddress) throws IOException {
-	
+
 		System.out.println("VOGLIO INVIARE");
 		
 		udpSender = new DatagramSocket();
