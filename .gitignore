@@ -25,3 +25,7 @@ hs_err_pid*
 *.prefs
 *.ini
 .metadata
+*.index
+.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/properties.index
+.metadata/.plugins/org.eclipse.core.resources/.safetable/org.eclipse.core.resources
+.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/properties.index
