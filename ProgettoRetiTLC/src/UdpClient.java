@@ -9,7 +9,8 @@ import java.util.Scanner;
 public class UdpClient {
 	
 	private String serverAddress = "192.168.1.137";
-	private String destinationAddress = "192.168.1.83";
+	private String destinationName = "";
+	private String name = "windows";
 	
 	//Ports
 	private int sendPort = 4001;
@@ -21,6 +22,9 @@ public class UdpClient {
 	
 	//Constructor
 	public UdpClient() {
+	}
+	
+	public connectToServer() {
 	}
 	
 	public void Menu() throws IOException{
