@@ -8,6 +8,11 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
 
 public class DemoProject {
+	
+	public static void clearScreen() {  
+	    System.out.print("\033[H\033[2J");  
+	    System.out.flush();  
+	   }
 
 	public static void main(String[] args) {
 		
@@ -24,12 +29,30 @@ public class DemoProject {
 					XMPPConnection con = new XMPPConnection(config);
 					con.connect();
 					
+					
+					System.out.println("=========> LOGIN <=========");
+					
+					System.out.print("Username: ");
+					Scanner reader = new Scanner(System.in);
+					String username = reader.nextLine();
+					
+					System.out.print("Password: ");
+					String password = reader.nextLine();
+										
 					AccountManager manager = con.getAccountManager();
-					manager.createAccount("indismack", "provasmack");
+					manager.createAccount(username, password);
 					
-					con.login("indismack", "provasmack");
+					con.login(username, password);
 					
-					Chat chat = con.getChatManager().createChat("indi@desktop-qi7gbpd.lan", new MessageListener () {
+					clearScreen();
+					
+					System.out.println("=========> LOGIN <=========");
+					
+					System.out.print("Username destinatario:  ");
+					String destUsername = reader.nextLine() + "@desktop-qi7gbpd.lan" ;  // username + dominio XMPP
+					
+					
+					Chat chat = con.getChatManager().createChat(destUsername, new MessageListener () {
 
 						@Override
 						public void processMessage(Chat chat, Message msg) {
@@ -41,9 +64,11 @@ public class DemoProject {
 					
 					System.out.println("Connected");
 					
-					Scanner reader = new Scanner(System.in);
+					
 					while(con.isConnected()) {
-						chat.sendMessage(reader.nextLine());
+						String msg = reader.nextLine();
+						chat.sendMessage(msg);
+						System.out.println("You said: " + msg);
 					}
 					reader.close();
 					
