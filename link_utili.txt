@@ -1,8 +1,6 @@
-https://www.youtube.com/watch?v=QOTAplffl3I
-https://www.youtube.com/watch?v=Djf89MG7CcA
-
 -- GUIDA A SMACK API
 http://www.javaprogrammingforums.com/java-networking-tutorials/551-how-write-simple-xmpp-jabber-client-using-smack-api.html
+https://www.javacodegeeks.com/2010/09/xmpp-im-with-smack-for-java.html
 
 -- SPIEGAZIONE DI XMPP E SMACK
 semplice    : https://www.youtube.com/watch?v=6YhMOFS04kA
@@ -10,6 +8,16 @@ dettagliata : https://www.youtube.com/watch?v=O0gZSd_oW1g
 
 -- SMACK CLIENT SEMPLICE
 https://www.youtube.com/watch?v=iAuc3wp5Mt4
+https://download.igniterealtime.org/smack/docs/latest/documentation/
 
 -- OPENFIRE SERVER
 https://www.youtube.com/watch?v=Q0ZF5hQ8uY4
+
+
+---- ALTRI LINK
+
+-- interfaccia grafica semplice
+https://www.youtube.com/watch?v=QOTAplffl3I
+
+-- link poco utile
+https://www.youtube.com/watch?v=Djf89MG7CcA
