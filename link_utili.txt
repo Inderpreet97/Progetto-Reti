@@ -16,6 +16,12 @@ https://www.youtube.com/watch?v=Q0ZF5hQ8uY4
 
 ---- ALTRI LINK
 
+-- problemi con il login
+https://discourse.igniterealtime.org/t/rfc-reworking-the-exceptions-of-connect-and-login/72255/2
+
+-- SMACK 4.1.xx
+https://stackoverflow.com/questions/21195402/sending-and-receiving-message-using-java-smack-api-not-working-on-example
+
 -- interfaccia grafica semplice
 https://www.youtube.com/watch?v=QOTAplffl3I
 
