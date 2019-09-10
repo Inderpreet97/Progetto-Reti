@@ -28,7 +28,6 @@ public class DemoProject {
 			config.setSendPresence(true);
 
 			XMPPConnection con = new XMPPConnection(config);
-			con.connect();
 
 			int userChoice = 0;
 			boolean userLogged = false;
@@ -36,6 +35,8 @@ public class DemoProject {
 			String password;
 
 			do {
+				con.connect();
+				
 				do {
 					try {
 						System.out.println("=========> UNIPR MESSENGER <=========");
@@ -75,6 +76,7 @@ public class DemoProject {
 						System.out.println("\nERRORE DURANTE IL LOGIN.");
 						System.out.println(ex.getMessage());
 						System.out.println("Potrebbero essere stati inseriti username e/o password sbagliati.");
+						con.disconnect();
 						System.out.println("Premere un tasto per continuare...");
 						reader.nextLine();
 						
