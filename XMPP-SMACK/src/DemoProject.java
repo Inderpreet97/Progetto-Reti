@@ -15,7 +15,8 @@ import org.jivesoftware.smackx.ReportedData.Row;
 import org.jivesoftware.smackx.search.UserSearchManager;
 
 public class DemoProject {
-	private static String XMPPServerAddress = "127.0.0.1";
+	
+	private static String XMPPServerAddress = "160.78.221.158";
 	private static int XMPPServerPort = 5222;
 
 	public static void main(String[] args) {
@@ -216,11 +217,8 @@ public class DemoProject {
 			
 			
 			*/
+				
 			
-			
-			
-			
-
 			Chat chat = con.getChatManager().createChat(destUsername + "@desktop-qi7gbpd.lan" , new MessageListener () {
 
 				@Override
