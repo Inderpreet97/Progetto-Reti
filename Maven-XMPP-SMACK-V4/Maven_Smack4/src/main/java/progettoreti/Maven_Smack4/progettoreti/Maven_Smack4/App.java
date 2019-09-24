@@ -1,7 +1,9 @@
 package progettoreti.Maven_Smack4.progettoreti.Maven_Smack4;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Stack;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
@@ -35,7 +37,10 @@ public class App {
 	private static String XMPPServerAddress = "localhost";
 	private static String XMPPDomain = "@desktop-qi7gbpd.lan";
 	private static int XMPPServerPort = 5222;
-
+	private static boolean onChat = false;
+	private static String onChatUsername;
+	private static HashMap<String,Stack<Message>> incomingMessages = new HashMap<String,Stack<Message>>();
+ 
 	public static void main(String[] args) throws SmackException, IOException, XMPPException, InterruptedException {
 		
 		// Create the configuration for this new connection
@@ -155,20 +160,73 @@ public class App {
 
 			chatManager.addIncomingListener(new IncomingChatMessageListener() {
 				public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-					System.out.println("New message from " + from + ": " + message.getBody());
+					String senderUsername = from.getLocalpart().toString();
+					if(onChat && onChatUsername.equals(senderUsername)) {
+						System.out.println("New message from " + senderUsername + ": " + message.getBody());
+					} else {
+						if(incomingMessages.containsKey(senderUsername)) {
+							incomingMessages.get(senderUsername).add(message);
+						} else {
+							incomingMessages.put(senderUsername, new Stack<Message>());
+							incomingMessages.get(senderUsername).add(message);
+						}
+					}
 				}
 			});
 
-			EntityBareJid jid = JidCreate.entityBareFrom("beppe" + XMPPDomain);
-			Chat chat = chatManager.chatWith(jid);
-			chat.send("Hey, sono online!");
-			System.out.println("Ora puoi mandare i messaggi a beppe.\nInvia 'bye' per terminare la chat");
-			
-			String msg;
+			boolean logout = false;
 			do {
-				msg = reader.nextLine();
-				chat.send(msg);
-			} while (!msg.contains("bye"));
+				do {
+					try {
+						System.out.println("=========> MAIN MENU <=========");
+						System.out.println("1) Aggiungi Utente\n2) Utenti Attivi\n3) Chat con utente");
+						System.out.print("4) Modifica Profilo\n5) Logout\nScelta: ");
+						userChoice = reader.nextInt();
+						reader.nextLine(); // Perchè nextInt() non legge "\n" e quindi viene letto da questo nextLine()
+					} catch (Exception ex) {
+						reader.nextLine();
+						userChoice = 0;
+					}
+				} while (userChoice < 1 || userChoice > 5);
+				
+				switch(userChoice) {
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					System.out.print("Username Destinatario: ");
+					String destUsername = reader.nextLine();
+					EntityBareJid jid = JidCreate.entityBareFrom(destUsername + XMPPDomain);
+					
+					Chat chat = chatManager.chatWith(jid);
+					chat.send("Hey, sono online!");
+					
+					System.out.println("Ora puoi mandare i messaggi a" + destUsername + ".\nInvia 'bye' per terminare la chat");
+					onChat = true;
+					onChatUsername = destUsername;
+					String msg;
+					do {
+						msg = reader.nextLine();
+						chat.send(msg);
+					} while (!msg.contains("bye"));
+					
+					onChat = false;
+					break;
+				case 4:
+					break;
+				case 5:
+					logout = true;
+					break;
+					
+				default:
+					System.out.println("Errore! Scelta non valida.");
+					break;
+				}
+				
+			} while (!logout);
+			
+			
 
 			System.out.println("Premere un tasto per terminare la chat...");
 			reader.nextLine();
