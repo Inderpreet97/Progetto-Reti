@@ -16,6 +16,21 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 
+/** 
+ * 
+ * @author indim
+ * 
+ * Creare classe Chat con un attributo bool onChat.
+ * Il messageListener se onChat = true allora stampa il messaggio sulla console.
+ * Se onChat = false aggiunge il messaggio in uno stack che verrà stampato quando l'utente entra in chat
+ * 
+ * Dopo il login mostrare un menu
+ * 		- Aggiungi amico
+ * 		- visualizza lista amici e stato amici e nuovi messaggi(si/no)
+ * 		- inzia chat con un amico
+ * 		- modifica profilo
+ * 		- logout
+ */
 public class App {
 	private static String XMPPServerAddress = "localhost";
 	private static String XMPPDomain = "@desktop-qi7gbpd.lan";
