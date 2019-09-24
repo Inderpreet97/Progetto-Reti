@@ -19,11 +19,10 @@ public class App
     	// Create the configuration for this new connection
     	XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
     	configBuilder.setUsernameAndPassword("indi", "indi123");
-    	//configBuilder.setResource("SomeResource");
     	configBuilder.setSecurityMode(SecurityMode.disabled);
     	configBuilder.setHost("localhost");
     	configBuilder.setXmppDomain("@desktop-qi7gbpd.lan"); //"desktop-qi7gbpd.lan"
-    	
+   	
 
     	AbstractXMPPConnection connection = new XMPPTCPConnection(configBuilder.build());
     	// Connect to the server
