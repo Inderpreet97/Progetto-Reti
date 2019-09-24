@@ -1,3 +1,4 @@
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -113,6 +114,7 @@ public class DemoProject {
 						System.out.println("ERRORE DURANTE LA REGISTRAZIONE DI UN ACCOUNT.");
 						System.out.println(ex.getMessage());
 						System.out.println("L'username inserito potrebbe essere già registrato.");
+						con.disconnect();
 						System.out.println("Premere un tasto per continuare...");
 						reader.nextLine();
 						
@@ -124,29 +126,100 @@ public class DemoProject {
 					}
 				}
 			} while (!userLogged);
-
+			
 			System.out.print("Username destinatario:  ");
-
 			String destUsername = reader.nextLine();  // username + dominio XMPP
-
+//
+//			UserSearchManager search = new UserSearchManager(con);
+//			Form searchForm = search.getSearchForm("search." + con.getServiceName());
+//
+//			Form answerForm = searchForm.createAnswerForm();
+//			answerForm.setAnswer("Username", true);
+//			answerForm.setAnswer("search", destUsername);
+//			ReportedData data = search.getSearchResults(answerForm, "search." + con.getServiceName());
+//
+//			if (data.getRows() != null) {
+//				Iterator<Row> rowIterator = data.getRows();
+//
+//				while(rowIterator.hasNext()) {
+//					System.out.println(rowIterator.next());
+//				}
+//
+//			}
+//
+//			System.out.println("NON TROVATO");
+	/*		
+			System.out.print("Username destinatario:  ");
+			String destUsername = reader.nextLine();  // username + dominio XMPP
+			
 			UserSearchManager search = new UserSearchManager(con);
-			Form searchForm = search.getSearchForm("search." + con.getServiceName());
 
-			Form answerForm = searchForm.createAnswerForm();
-			answerForm.setAnswer("Username", true);
-			answerForm.setAnswer("search", destUsername);
-			ReportedData data = search.getSearchResults(answerForm, "search." + con.getServiceName());
+			String searchString = null;
 
-			if (data.getRows() != null) {
-				Iterator<Row> rowIterator = data.getRows();
+			try {
 
-				while(rowIterator.hasNext()) {
-					System.out.println(rowIterator.next());
+				Collection services = search.getSearchServices();
+				
+				services.toArray();
+				String[] nn = (String[]) services.toArray(new String[services.size()]);
+
+				for (int i = 0; i < nn.length; i++) {
+
+					searchString = nn[i].toString();
+
 				}
+			} catch (XMPPException e) {
+
+				e.printStackTrace();
+			}
+			
+			if (searchString == null || searchString.isEmpty()) {
+
+				searchString = "search." + con.getServiceName();
 
 			}
 
-			System.out.println("NON TROVATO");
+			Form searchForm = null;
+			
+			try {
+
+				searchForm = search.getSearchForm(searchString);
+
+				Form answerForm = searchForm.createAnswerForm();
+
+				answerForm.setAnswer("user", destUsername);
+
+				//answerForm.setAnswer(“Username”,true);
+
+				// answerForm.setAnswer(“search”, jabberId);
+
+				ReportedData data = search.getSearchResults(answerForm, searchString);
+
+				if (data.getRows() != null) {
+
+					for (ReportedData.Row row : data.getRows()) {
+
+						for (String value : row.getValues("jid")) {
+
+							//get user value
+
+						}
+
+					}
+
+				}
+			} catch (XMPPException e) {
+				e.printStackTrace();
+			}
+			
+			
+			
+			
+			*/
+			
+			
+			
+			
 
 			Chat chat = con.getChatManager().createChat(destUsername + "@desktop-qi7gbpd.lan" , new MessageListener () {
 
