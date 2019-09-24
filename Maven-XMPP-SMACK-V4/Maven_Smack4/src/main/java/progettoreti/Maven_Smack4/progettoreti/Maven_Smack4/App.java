@@ -13,33 +13,41 @@ public class App
 {
     public static void main( String[] args ) throws SmackException, IOException, XMPPException, InterruptedException
     {
-    	// Start Scanner
-    	Scanner reader = new Scanner(System.in);
     	
     	// Create the configuration for this new connection
     	XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
-    	configBuilder.setUsernameAndPassword("indi", "indi123");
+    	configBuilder.setUsernameAndPassword("beppe", "beppe123");
     	//configBuilder.setResource("SomeResource");
     	configBuilder.setSecurityMode(SecurityMode.disabled);
-    	configBuilder.setHost("localhost");
+    	configBuilder.setPort(5222);
+    	configBuilder.setHost("160.78.162.44");
     	configBuilder.setXmppDomain("@desktop-qi7gbpd.lan"); //"desktop-qi7gbpd.lan"
     	
-
     	AbstractXMPPConnection connection = new XMPPTCPConnection(configBuilder.build());
-    	// Connect to the server
-    	connection.connect();
-    	// Log into the server
-    	connection.login();
+    	
+    	try {
+    		// Start Scanner
+        	Scanner reader = new Scanner(System.in);          	   	
+       	
+        	// Connect to the server
+        	connection.connect();
+        	// Log into the server
+        	connection.login();
 
-    	System.out.println( "Connected!" );
-    	
-		System.out.println("Premere un tasto per continuare...");
-		reader.nextLine();
-		
-    	// Disconnect from the server
-    	connection.disconnect();
-    	
-    	System.out.println( "Disconnected!" );
+        	System.out.println( "Connected!" );
+        	
+    		System.out.println("Premere un tasto per continuare...");
+    		reader.nextLine();
+    		
+        	
+        	
+        	System.out.println( "Disconnected!" );
+    	}catch(Exception ex) {
+    		System.out.println(ex.getMessage());
+    	}finally {
+    		// Disconnect from the server
+        	connection.disconnect();
+    	}
         
     }
 }
