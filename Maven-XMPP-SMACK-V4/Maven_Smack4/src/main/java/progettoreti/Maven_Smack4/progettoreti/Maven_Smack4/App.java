@@ -35,8 +35,8 @@ import org.jxmpp.jid.parts.Localpart;
  *         - modifica profilo - logout
  */
 public class App {
-	private static String XMPPServerAddress = "localhost";
-	private static String XMPPDomain = "@desktop-qi7gbpd.lan";
+	private static String XMPPServerAddress = "160.78.232.92";
+	private static String XMPPDomain = "@messenger.unipr.it";
 	private static int XMPPServerPort = 5222;
 	private static AbstractXMPPConnection connection;
 	private static boolean onChat = false;
@@ -269,7 +269,7 @@ public class App {
 		Collection<RosterEntry> entries = roster.getEntries();
 
 		for (RosterEntry entry : entries) {
-			System.out.println(entry);
+			System.out.println(entry.getName());
 		}
 	}
 

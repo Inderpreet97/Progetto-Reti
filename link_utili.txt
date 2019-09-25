@@ -2,6 +2,9 @@
 http://www.javaprogrammingforums.com/java-networking-tutorials/551-how-write-simple-xmpp-jabber-client-using-smack-api.html
 https://www.javacodegeeks.com/2010/09/xmpp-im-with-smack-for-java.html
 
+-- Documentazione SMACK 4.3
+https://github.com/igniterealtime/Smack/tree/master/documentation
+
 -- SPIEGAZIONE DI XMPP E SMACK
 semplice    : https://www.youtube.com/watch?v=6YhMOFS04kA
 dettagliata : https://www.youtube.com/watch?v=O0gZSd_oW1g
