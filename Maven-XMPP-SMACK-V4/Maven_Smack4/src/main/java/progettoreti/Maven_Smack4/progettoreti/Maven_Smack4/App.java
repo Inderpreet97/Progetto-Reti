@@ -31,6 +31,7 @@ import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 
 public class App {
+	
 	private static String XMPPServerAddress = "localhost";
 	private static String XMPPDomain = "@messenger.unipr.it";
 	private static int XMPPServerPort = 5222;
@@ -360,6 +361,7 @@ public class App {
 
 	private static void modifyProfile() {
 		// ... cambia password
+		roster = Roster.getInstanceFor(connection);
 	}
 
 }
