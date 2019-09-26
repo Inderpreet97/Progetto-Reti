@@ -14,7 +14,9 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat2.*;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.Roster.SubscriptionMode;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -28,19 +30,6 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 
-/**
- * 
- * @author indim
- * 
- *         Creare classe Chat con un attributo bool onChat. Il messageListener
- *         se onChat = true allora stampa il messaggio sulla console. Se onChat
- *         = false aggiunge il messaggio in uno stack che verrà stampato quando
- *         l'utente entra in chat
- * 
- *         Dopo il login mostrare un menu - Aggiungi amico - visualizza lista
- *         amici e stato amici e nuovi messaggi(si/no) - inzia chat con un amico
- *         - modifica profilo - logout
- */
 public class App {
 	private static String XMPPServerAddress = "localhost";
 	private static String XMPPDomain = "@messenger.unipr.it";
@@ -76,9 +65,15 @@ public class App {
 			int userChoice;
 
 			do {
+				roster = Roster.getInstanceFor(connection);
+				roster.setSubscriptionMode(SubscriptionMode.accept_all);
+				Presence p = new Presence(Presence.Type.available);
+				p.setStatus("Online");
+				connection.sendStanza(p);
+
 				do {
 					try {
-						System.out.println("=========> MAIN MENU <=========");
+						System.out.println("\n=========> MAIN MENU <=========");
 						System.out.println("1) Aggiungi Utente\n2) Utenti Attivi\n3) Chat con utente");
 						System.out.print("4) Modifica Profilo\n5) Logout\nScelta: ");
 						userChoice = reader.nextInt();
@@ -93,18 +88,22 @@ public class App {
 
 				switch (userChoice) {
 				case 1:
+					System.out.println();
 					addFriend();
 					break;
 				case 2:
+					System.out.println();
 					printFriendList();
 					break;
 				case 3:
+					System.out.println();
 					startChat();
 					break;
 				case 4:
+					System.out.println();
 					modifyProfile();
 					break;
-				case 5:
+				case 5:System.out.println();
 					logout = true;
 					break;
 
@@ -191,7 +190,7 @@ public class App {
 					connection.login(username, password);
 
 					userLogged = true;
-
+					
 					System.out.println("Login effettuato correttamente.");
 					System.out.println("Premere un tasto per continuare...");
 					reader.nextLine();
@@ -282,21 +281,26 @@ public class App {
 				if (!it.hasNext()) {
 					System.out.println("Nessun utente trovato con questo username " + friendUsername);
 				} else {
-					roster = Roster.getInstanceFor(connection);
-					roster.createEntry(friendJid, friendName, null);
+					boolean userFound = false;
 					while (it.hasNext()) {
 						Row row = it.next();
 						List<CharSequence> values = row.getValues("username");
-						Iterator<CharSequence> iterator = values.iterator();
-						if (iterator.hasNext()) {
-							CharSequence value = iterator.next();
-							System.out.println(value);
-							// Do what you want
+
+						if (values.contains(friendUsername)) {
+							roster.createEntry(friendJid, friendName, null); // Aggiungo amico alla "lista amici"
+							roster.sendSubscriptionRequest(friendJid); // Chiedo di poter vedere il suo stato
+							System.out.println("Utente aggiunto alla lista amici!");
+							userFound = true;
+							break;
 						}
 					}
-				}
-			}
 
+					if (!userFound) {
+						System.out.println("Nessun utente trovato con questo username " + friendUsername);
+					}
+				}
+
+			}
 
 		} catch (Exception ex) {
 			System.out.println("Error: " + ex.getMessage());
@@ -304,11 +308,16 @@ public class App {
 	}
 
 	private static void printFriendList() {
-		roster = Roster.getInstanceFor(connection);
 		Collection<RosterEntry> entries = roster.getEntries();
 
-		for (RosterEntry entry : entries) {
-			System.out.println(entry.getName());
+		if (!entries.isEmpty()) {
+			for (RosterEntry entry : entries) {
+				System.out.print("Nome: " + entry.getName() + "\t");
+				System.out.print("Username: " + entry.getJid().getLocalpartOrNull() + "\t");
+				System.out.println("Stato: " + roster.getPresence(entry.getJid()).getType());
+			}
+		} else {
+			System.out.println("Lista amici vuota!");
 		}
 	}
 
