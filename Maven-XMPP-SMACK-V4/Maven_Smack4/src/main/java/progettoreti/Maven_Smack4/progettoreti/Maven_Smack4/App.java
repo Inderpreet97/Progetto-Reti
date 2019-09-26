@@ -35,8 +35,9 @@ import org.jxmpp.jid.parts.Localpart;
  *         - modifica profilo - logout
  */
 public class App {
+	
 	private static String XMPPServerAddress = "localhost";
-	private static String XMPPDomain = "@desktop-qi7gbpd.lan";
+	private static String XMPPDomain = "@messenger.unipr.it";
 	private static int XMPPServerPort = 5222;
 	private static AbstractXMPPConnection connection;
 	private static boolean onChat = false;
@@ -312,6 +313,7 @@ public class App {
 
 	private static void modifyProfile() {
 		// ... cambia password
+		roster = Roster.getInstanceFor(connection);
 	}
 
 }
