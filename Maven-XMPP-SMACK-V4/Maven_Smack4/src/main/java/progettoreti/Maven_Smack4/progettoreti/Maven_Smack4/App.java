@@ -3,6 +3,8 @@ package progettoreti.Maven_Smack4.progettoreti.Maven_Smack4;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -17,6 +19,11 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.search.ReportedData;
+import org.jivesoftware.smackx.search.ReportedData.Row;
+import org.jivesoftware.smackx.search.UserSearchManager;
+import org.jivesoftware.smackx.xdata.Form;
+import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
@@ -110,7 +117,7 @@ public class App {
 			} while (!logout);
 
 			System.out.println("Premere un tasto per terminare la chat...");
-			reader.nextLine();			
+			reader.nextLine();
 
 		} catch (Exception ex) {
 
@@ -120,7 +127,7 @@ public class App {
 
 		} finally {
 			reader.close();
-			
+
 			// Disconnect from the server
 			connection.disconnect();
 			System.out.println("Disconnected!");
@@ -256,10 +263,42 @@ public class App {
 			String friendUsername = reader.nextLine();
 			System.out.print("Nome Amico: ");
 			String friendName = reader.nextLine();
-			EntityBareJid friendJid = JidCreate.entityBareFrom(friendUsername + XMPPDomain);
 
-			roster = Roster.getInstanceFor(connection);
-			roster.createEntry(friendJid, friendName, null);
+			EntityBareJid friendJid = JidCreate.entityBareFrom(friendUsername + XMPPDomain);
+			DomainBareJid servizioRicerca = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
+
+			UserSearchManager search = new UserSearchManager(connection);
+			Form searchForm = search.getSearchForm(servizioRicerca);
+			Form answerForm = searchForm.createAnswerForm();
+
+			answerForm.setAnswer("Username", true);
+			answerForm.setAnswer("search", friendUsername);
+
+			ReportedData data = search.getSearchResults(answerForm, servizioRicerca);
+
+			if (data != null) {
+				List<Row> rows = data.getRows();
+				Iterator<Row> it = rows.iterator();
+
+				if (!it.hasNext()) {
+					System.out.println("Nessun utente trovato con questo username " + friendUsername);
+				} else {
+					roster = Roster.getInstanceFor(connection);
+					roster.createEntry(friendJid, friendName, null);
+					while (it.hasNext()) {
+						Row row = it.next();
+						List<CharSequence> values = row.getValues("username");
+						Iterator<CharSequence> iterator = values.iterator();
+						if (iterator.hasNext()) {
+							CharSequence value = iterator.next();
+							System.out.println(value);
+							// Do what you want
+						}
+					}
+				}
+			}
+
+
 		} catch (Exception ex) {
 			System.out.println("Error: " + ex.getMessage());
 		}
@@ -270,7 +309,7 @@ public class App {
 		Collection<RosterEntry> entries = roster.getEntries();
 
 		for (RosterEntry entry : entries) {
-			System.out.println(entry);
+			System.out.println(entry.getName());
 		}
 	}
 
