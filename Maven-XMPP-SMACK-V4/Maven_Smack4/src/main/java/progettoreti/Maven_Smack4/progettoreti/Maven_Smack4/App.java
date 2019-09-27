@@ -115,9 +115,6 @@ public class App {
 
 			} while (!logout);
 
-			System.out.println("Premere un tasto per terminare la chat...");
-			reader.nextLine();
-
 		} catch (Exception ex) {
 
 			System.out.println("Errore " + ex.getMessage());
