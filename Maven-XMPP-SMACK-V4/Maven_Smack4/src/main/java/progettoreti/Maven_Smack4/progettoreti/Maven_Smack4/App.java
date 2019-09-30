@@ -32,7 +32,7 @@ import org.jxmpp.jid.parts.Localpart;
 
 public class App {
 	
-	private static String XMPPServerAddress = "localhost";
+	private static String XMPPServerAddress = "160.78.247.224";
 	private static String XMPPDomain = "@messenger.unipr.it";
 	private static int XMPPServerPort = 5222;
 	private static AbstractXMPPConnection connection;
@@ -259,7 +259,7 @@ public class App {
 			String friendUsername = reader.nextLine();
 			System.out.print("Nome Amico: ");
 			String friendName = reader.nextLine();
-
+			
 			EntityBareJid friendJid = JidCreate.entityBareFrom(friendUsername + XMPPDomain);
 			DomainBareJid servizioRicerca = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
 
