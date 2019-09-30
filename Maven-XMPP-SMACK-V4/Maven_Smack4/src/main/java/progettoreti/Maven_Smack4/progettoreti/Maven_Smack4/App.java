@@ -32,10 +32,13 @@ import org.jxmpp.jid.parts.Localpart;
 
 public class App {
 	
-	private static String XMPPServerAddress = "160.78.247.224";
+	// Config Server - Connection
+	private static String XMPPServerAddress = "localhost";
 	private static String XMPPDomain = "@messenger.unipr.it";
 	private static int XMPPServerPort = 5222;
 	private static AbstractXMPPConnection connection;
+	
+	// Variables
 	private static boolean onChat = false;
 	private static String onChatUsername;
 	private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
@@ -68,9 +71,9 @@ public class App {
 			do {
 				roster = Roster.getInstanceFor(connection);
 				roster.setSubscriptionMode(SubscriptionMode.accept_all);
-				Presence p = new Presence(Presence.Type.available);
-				p.setStatus("Online");
-				connection.sendStanza(p);
+				Presence presence = new Presence(Presence.Type.available);
+				presence.setStatus("Online");
+				connection.sendStanza(presence);
 
 				do {
 					try {
@@ -261,9 +264,12 @@ public class App {
 			String friendName = reader.nextLine();
 			
 			EntityBareJid friendJid = JidCreate.entityBareFrom(friendUsername + XMPPDomain);
+			
+			
 			DomainBareJid servizioRicerca = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
 
 			UserSearchManager search = new UserSearchManager(connection);
+			
 			Form searchForm = search.getSearchForm(servizioRicerca);
 			Form answerForm = searchForm.createAnswerForm();
 
@@ -297,7 +303,9 @@ public class App {
 						System.out.println("Nessun utente trovato con questo username " + friendUsername);
 					}
 				}
-
+			}
+			else {
+				System.out.println("Nessun utente trovato con questo username " + friendUsername);
 			}
 
 		} catch (Exception ex) {
