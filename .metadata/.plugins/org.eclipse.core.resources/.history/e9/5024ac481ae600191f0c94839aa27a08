@@ -1,0 +1,39 @@
+package Ing_Software.Circolo_Sportivo;
+
+
+import java.util.Scanner;
+
+public class Amministratore extends Socio {
+	
+	// Variabili globali
+	public Scanner sc = new Scanner(System.in);
+	
+	// Persone
+	public void aggiungiPersona() {}
+	public void modificaPersona() {}
+	public void rimuoviPersona() {}
+
+	// Costruttori
+	public Amministratore() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Amministratore(String nome, String cognome, String email, String password) {
+		super(nome, cognome, email, password);
+		// TODO Auto-generated constructor stub
+	}
+	
+	// Attività
+	public void aggiungiCorso() {
+		String nome = sc.nextLine();
+		if (App.searchActivityByName(nome) == -1) {
+			Corso c = new Corso(nome);
+		}else {
+			System.out.println("Nome già utilizzato");
+		}
+	}
+	public void aggiungiGara() {}
+	
+	public void rimuoviAttivita() {}
+	public void modificaAttivita() {}
+}

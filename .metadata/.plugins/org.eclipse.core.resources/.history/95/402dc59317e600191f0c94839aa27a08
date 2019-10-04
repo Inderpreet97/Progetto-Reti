@@ -1,0 +1,50 @@
+package Ing_Software.Circolo_Sportivo;
+
+import java.util.Scanner;
+
+public class App 
+{
+	
+	// Variabili globali
+	public static Scanner sc = new Scanner(System.in);
+	
+	// Liste globali -- Attività
+	public static Attivita[] listaAttivita = new Attivita[0];
+	
+	// Liste globali -- Persone
+	public static Socio[] listaSoci = {
+			new Socio("Pippo", "Baudo", "baudo@unipr.it", "pippo123")
+	};
+	static Amministratore admin = new Amministratore("Giuseppe", "Urbano", "beppeadmin@unipr.it", "beppe123");
+
+	
+    public static void main( String[] args )
+    {
+    }
+    
+    // Metodi di ricerca
+    public static int searchActivityByName(String nome) {
+    	// Restituisce l'indice dell'array corrispondente all'attività, altrimenti restituisce -1
+    	
+    	int index = 0;
+    	for (Attivita a : listaAttivita) {
+    		if (a.getNome().equals(nome)) {
+    			return index;
+    		}
+    		index++;
+    	}
+    	System.out.println("Attività non trovata");
+    	return -1;
+    	
+    	
+    }
+
+    // Metodi di stampa
+    public static void stampaLista() {
+    	for (Attivita a : listaAttivita) {
+    		
+    	}
+    }
+    
+    
+}

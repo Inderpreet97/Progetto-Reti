@@ -1,0 +1,24 @@
+package Ing_Software.Circolo_Sportivo;
+
+public class Socio extends Persona {
+	
+	// Costruttori
+	public Socio() {
+		// TODO Auto-generated constructor stub
+	}
+	public Socio(String nome, String cognome, String email, String password) {
+		super(nome, cognome, email, password);
+		// TODO Auto-generated constructor stub
+	}
+	
+	// Metodi
+	public void iscrizioneAttivita() {
+		System.out.println("Nome attività a cui iscriversi");
+		String nome = App.sc.nextLine();
+		int index = App.searchActivityByName(nome);
+		if (index != -1) {
+			App.listaAttivita[index].aggiungiSocio(this);
+		}
+	}
+	public void disiscrizioneAttivita() {}
+}

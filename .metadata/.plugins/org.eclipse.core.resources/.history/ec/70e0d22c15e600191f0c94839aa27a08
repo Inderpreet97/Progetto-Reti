@@ -1,0 +1,24 @@
+package Ing_Software.Circolo_Sportivo;
+
+import java.util.Scanner;
+
+public class App 
+{
+	
+	// Variabili globali
+	public static Scanner sc = new Scanner(System.in);
+	
+	// Liste globali -- Attività
+	public static Attivita[] listaAttivita = new Attivita[0];
+	
+	// Liste globali -- Persone
+	public static Socio[] listaSoci = {
+			new Socio("Pippo", "Baudo", "baudo@unipr.it", "pippo123")
+	};
+	static Amministratore admin = new Amministratore("Giuseppe", "Urbano", "beppeadmin@unipr.it", "beppe123");
+
+	
+    public static void main( String[] args )
+    {
+    }
+}

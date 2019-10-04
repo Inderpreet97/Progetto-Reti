@@ -1,0 +1,25 @@
+package Ing_Software.Circolo_Sportivo;
+
+public abstract class Attivita {
+
+	// Attributi
+	private String nome;
+	private Socio[] listaSoci;
+	
+	public Attivita() {};
+	public Attivita(String nome) {
+		this.nome = nome;
+	}
+	
+	// Get
+	public String getNome() 			{	return nome;			}
+	public Persona[] getListaPersone() 	{	return listaPersone;	}
+	
+	// Set
+	public void setNome(String nome) 	{	this.nome = nome;		}
+	
+	// Metodi
+	public void aggiungiSocio(Socio s) {
+		
+	}
+}

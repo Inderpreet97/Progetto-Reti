@@ -1,0 +1,17 @@
+package Ing_Software.Circolo_Sportivo;
+
+
+public class Gara extends Attivita {
+	
+	public Gara() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Gara(String nome, float premioDenaro) {
+		super(nome);
+		// TODO Auto-generated constructor stub
+	}
+
+	
+
+}

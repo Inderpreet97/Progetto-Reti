@@ -1,0 +1,109 @@
+package progettoreti.Maven_Smack4.progettoreti.Maven_Smack4;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+
+import javax.swing.JPasswordField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.awt.event.ActionEvent;
+
+public class LoginPage {
+
+	private JFrame frame;
+	private JTextField usernameField;
+	private JPasswordField passwordField;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					LoginPage window = new LoginPage();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public LoginPage() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblUsername = new JLabel("Username");
+		lblUsername.setBounds(42, 65, 96, 17);
+		frame.getContentPane().add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setBounds(42, 112, 66, 15);
+		frame.getContentPane().add(lblPassword);
+		
+		usernameField = new JTextField();
+		usernameField.setBounds(156, 63, 124, 19);
+		frame.getContentPane().add(usernameField);
+		usernameField.setColumns(10);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(156, 110, 124, 19);
+		frame.getContentPane().add(passwordField);
+		
+		JButton clearButton = new JButton("Clear");
+		clearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				usernameField.setText(null);
+				passwordField.setText(null);
+			}
+		});
+		clearButton.setBounds(42, 166, 114, 25);
+		frame.getContentPane().add(clearButton);
+		
+		JButton loginButton = new JButton("Login");
+		loginButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Login
+				App application = new App();
+				String username = usernameField.getText();
+				String password = passwordField.getText();
+				
+				try {
+					if (application.loginGui(username, password)) {
+						// Correct
+					}else{
+						JOptionPane.showMessageDialog(null, "Not correct");
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Not correct");
+				}
+				
+			}
+		});
+		loginButton.setBounds(224, 166, 114, 25);
+		frame.getContentPane().add(loginButton);
+	}
+}

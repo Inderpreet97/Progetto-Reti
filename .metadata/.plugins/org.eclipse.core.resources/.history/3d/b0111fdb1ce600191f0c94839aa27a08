@@ -1,0 +1,60 @@
+package Ing_Software.Circolo_Sportivo;
+
+import java.util.Scanner;
+
+public class App 
+{
+	
+	// Variabili globali
+	public static Scanner sc = new Scanner(System.in);
+	
+	// Liste globali -- Attività
+	public static Attivita[] listaAttivita = new Attivita[0];
+	
+	// Liste globali -- Persone
+	public static Persona[] listaPersone = {
+			new Socio("Pippo", "Baudo", "baudo@unipr.it", "pippo123")
+	};
+	static Amministratore admin = new Amministratore("Giuseppe", "Urbano", "beppeadmin@unipr.it", "beppe123");
+
+	// Metodi di inserimento
+	public static void aggiungiPersona(Persona p) {
+		Persona[] temp = new Persona[listaPersone.length + 1];
+		System.arraycopy(listaPersone, 0, temp, 0, listaPersone.length);
+	}
+	
+	// Metodi di ricerca
+    public static int searchActivityByName(String nome) {
+    	// Restituisce l'indice dell'array corrispondente all'attività, altrimenti restituisce -1
+    	
+    	int index = 0;
+    	for (Attivita a : listaAttivita) {
+    		if (a.getNome().equals(nome)) {
+    			return index;
+    		}
+    		index++;
+    	}
+    	System.out.println("Attività non trovata");
+    	return -1;
+    	
+    	
+    }
+
+    // Metodi di stampa
+    public static void stampaLista() {
+    	for (Attivita a : listaAttivita) {
+    		System.out.println("\n" + a.getNome());
+    	}
+    	sc.nextLine();
+    }
+	
+    public static void main( String[] args )
+    {
+    }
+    
+
+    
+    
+    
+    
+}

@@ -1,0 +1,14 @@
+package Ing_Software.Circolo_Sportivo;
+
+public class Corso extends Attivita {
+	
+	public Corso() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Corso(String nome, float prezzo) {
+		super(nome);
+		// TODO Auto-generated constructor stub
+	}
+
+}
