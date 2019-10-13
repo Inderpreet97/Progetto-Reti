@@ -29,7 +29,6 @@ import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 public class App {
 	
@@ -37,8 +36,7 @@ public class App {
 	private static String XMPPServerAddress = "localhost";
 	private static String XMPPDomain = "@messenger.unipr.it";
 	private static int XMPPServerPort = 5222;
-	public static AbstractXMPPConnection connection;
-	private XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
+	private static AbstractXMPPConnection connection;
 	
 	// Variables
 	private static boolean onChat = false;
@@ -46,21 +44,16 @@ public class App {
 	private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
 	private static Roster roster;
 	private static Scanner reader;
-	
-	
-	public App() throws XmppStringprepException {
+
+	public static void main(String[] args) throws SmackException, IOException, XMPPException, InterruptedException {
+
 		// Create the configuration for this new connection
-		
+		XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
 		configBuilder.setSecurityMode(SecurityMode.disabled);
 		configBuilder.setPort(XMPPServerPort);
 		configBuilder.setHost(XMPPServerAddress);
 		configBuilder.setXmppDomain(XMPPDomain);
 		connection = new XMPPTCPConnection(configBuilder.build());
-	}
-
-	public static void execute() throws SmackException, IOException, XMPPException, InterruptedException {
-
-		// App()
 
 		// Start Scanner
 		reader = new Scanner(System.in);
@@ -160,13 +153,8 @@ public class App {
 			}
 		});
 	}
-	
-	public static void loginGui(String username, String password) throws SmackException, IOException, XMPPException, InterruptedException {
-		// Log into the server
-		connection.login(username, password);	
-	}
-	
-	public static void login() throws SmackException, IOException, XMPPException, InterruptedException {
+
+	private static void login() throws SmackException, IOException, XMPPException, InterruptedException {
 		int userChoice = 0;
 		boolean userLogged = false;
 		String username;
