@@ -74,7 +74,7 @@ public class LoginPage {
 		
 		// Login button
 		JButton loginButton = new JButton("Login");
-		Application application = new Application();
+		// Application application = new Application(); 
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -82,21 +82,22 @@ public class LoginPage {
 				try {
 					
 					// Connection and login
-					application.connect();
-					application.login(usernameField.getText(), new String(passwordField.getPassword()));
+					Application.connect();
+					Application.login(usernameField.getText(), new String(passwordField.getPassword()));
+					Application.logged = true;
 					System.out.println("Login corrected");
 					loggedUser = true;
 					
 				} catch (XMPPException | SmackException | IOException | InterruptedException e) {
 					// Disconnecting
-					application.disconnect();
+					Application.disconnect();
 					System.out.println("Login NOT corrected");
 				}
 				
 				if (loggedUser) {
 					frame.dispose();
 					ChatPage chatPage = new ChatPage();
-					application.loggedUsername = usernameField.getText();
+					Application.loggedUsername = usernameField.getText();
 					chatPage.main();
 				}else {
 					JOptionPane.showMessageDialog(null, "Wrong username or password");

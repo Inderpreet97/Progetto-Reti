@@ -91,7 +91,7 @@ public class SignInPage {
 				String username = usernameField.getText();
 				String password = new String(passwordField.getPassword());
 				try {
-					application.singIn(username, password);
+					Application.singIn(username, password);
 					JOptionPane.showMessageDialog(null, "Signed UP!");
 					// LoginPage.main();
 				} catch (XmppStringprepException | NoResponseException | XMPPErrorException | NotConnectedException
