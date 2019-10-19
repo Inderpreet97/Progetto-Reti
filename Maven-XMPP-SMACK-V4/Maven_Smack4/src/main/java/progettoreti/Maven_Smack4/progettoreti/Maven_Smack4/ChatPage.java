@@ -76,10 +76,15 @@ public class ChatPage {
 		addFriendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					if (Application.addFriend(addFriendField.getText())) {
-						JOptionPane.showMessageDialog(null, "User has been added to friend list");
+					
+					if (!addFriendField.getText().equals("")) {
+						if (Application.addFriend(addFriendField.getText())) {
+							JOptionPane.showMessageDialog(null, "User has been added to friend list");
+						} else {
+							JOptionPane.showMessageDialog(null, "User not found");
+						}
 					} else {
-						JOptionPane.showMessageDialog(null, "User not found");
+						JOptionPane.showMessageDialog(null, "Please enter a correct the name");
 					}
 				} catch (Exception ex) {
 					// System.out.println(ex.getMessage());
@@ -104,7 +109,7 @@ public class ChatPage {
 			// !!!! PROBABILMENTE LA LISTA ENTRIES RIMANE VUOTA E LANCIA L'ECCEZIONE
 			
 			Collection<RosterEntry> entries = Application.getFriendList();
-			if (!entries.isEmpty()) {
+			/*if (!entries.isEmpty()) {
 				JLabel lblWelcomeToChat = new JLabel("List friends: " + Integer.toString(entries.size()));
 				lblWelcomeToChat.setBounds(140, 108, 180, 43);
 				frame.getContentPane().add(lblWelcomeToChat);
@@ -112,7 +117,7 @@ public class ChatPage {
 				JLabel lblWelcomeToChat = new JLabel("List friends: " + Integer.toString(entries.size()));
 				lblWelcomeToChat.setBounds(140, 108, 180, 43);
 				frame.getContentPane().add(lblWelcomeToChat);
-			}
+			}*/
 		} catch (Exception ex) {
 			System.out.println("Errore" + ex.getMessage());
 			System.out.println(Integer.toString(dim));
