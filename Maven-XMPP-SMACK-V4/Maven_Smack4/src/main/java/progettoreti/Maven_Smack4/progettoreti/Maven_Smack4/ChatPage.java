@@ -75,6 +75,7 @@ public class ChatPage {
 		JButton addFriendButton = new JButton("Add Friend");
 		addFriendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("Your name is " + Application.loggedUsername);
 				try {
 					
 					if (!addFriendField.getText().equals("")) {

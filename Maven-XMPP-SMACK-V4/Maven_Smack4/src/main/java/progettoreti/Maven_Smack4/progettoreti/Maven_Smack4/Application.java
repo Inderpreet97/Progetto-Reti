@@ -76,6 +76,7 @@ public class Application {
 	public static void login(String username, String password) throws XMPPException, SmackException, IOException, InterruptedException {
 		// Log into the server
 		connection.login(username, password);
+		loggedUsername = username;
 	}
 	
 	public static void singIn(String username, String password) throws XmppStringprepException, NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
