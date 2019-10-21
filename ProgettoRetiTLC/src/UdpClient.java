@@ -24,7 +24,7 @@ public class UdpClient {
 	public UdpClient() {
 	}
 	
-	public connectToServer() {
+	public void connectToServer() {
 	}
 	
 	public void Menu() throws IOException{
