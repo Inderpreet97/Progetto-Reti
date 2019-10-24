@@ -11,6 +11,8 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import progettoreti.Maven_Smack4.progettoreti.Maven_Smack4.Application.App;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -78,27 +80,25 @@ public class LoginPage {
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				boolean loggedUser = false;
 				try {
 					
 					// Connection and login
-					Application.connect();
-					Application.login(usernameField.getText(), new String(passwordField.getPassword()));
-					Application.logged = true;
-					System.out.println("Login corrected");
-					loggedUser = true;
+					App.connect();
+					App.login(usernameField.getText(), new String(passwordField.getPassword()));
+					//App.logged = true
 					
 				} catch (XMPPException | SmackException | IOException | InterruptedException e) {
 					// Disconnecting
-					Application.disconnect();
+					App.disconnect();
 					System.out.println("Login NOT corrected");
 				}
 				
-				if (loggedUser) {
+				if (App.logged) {
+					System.out.println("Login corrected");
 					frame.dispose();
-					ChatPage chatPage = new ChatPage();
-					Application.loggedUsername = usernameField.getText();
-					chatPage.main();
+					HomePage homePage = new HomePage();
+					App.loggedUsername = usernameField.getText();
+					homePage.main();
 				}else {
 					JOptionPane.showMessageDialog(null, "Wrong username or password");
 				}
@@ -113,7 +113,7 @@ public class LoginPage {
 		signInButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				frame.dispose();
-				signInPage.main();
+				signInPage.run();
 			}
 		});
 		signInButton.setBounds(89, 188, 114, 25);

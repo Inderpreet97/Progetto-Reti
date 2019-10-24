@@ -265,7 +265,6 @@ public class App {
 			
 			EntityBareJid friendJid = JidCreate.entityBareFrom(friendUsername + XMPPDomain);
 			
-			
 			DomainBareJid servizioRicerca = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
 
 			UserSearchManager search = new UserSearchManager(connection);

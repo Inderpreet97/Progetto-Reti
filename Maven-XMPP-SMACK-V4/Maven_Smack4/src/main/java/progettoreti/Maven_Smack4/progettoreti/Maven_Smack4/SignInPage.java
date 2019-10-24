@@ -12,6 +12,8 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import progettoreti.Maven_Smack4.progettoreti.Maven_Smack4.Application.App;
+
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -25,9 +27,9 @@ public class SignInPage {
 	private JPasswordField confirmPasswordField;
 
 	/**
-	 * Launch the application.
+	 * Launch the App.
 	 */
-	public void main() {
+	public void run() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -41,7 +43,7 @@ public class SignInPage {
 	}
 
 	/**
-	 * Create the application.
+	 * Create the App.
 	 * @throws XmppStringprepException 
 	 */
 	public SignInPage() throws XmppStringprepException {
@@ -83,20 +85,17 @@ public class SignInPage {
 		confirmPasswordField.setBounds(237, 106, 124, 19);
 		frame.getContentPane().add(confirmPasswordField);
 		
-		Application application = new Application();
-		
 		JButton signInButton = new JButton("Sign in");
 		signInButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String username = usernameField.getText();
 				String password = new String(passwordField.getPassword());
 				try {
-					Application.singIn(username, password);
+					App.singIn(username, password);
 					JOptionPane.showMessageDialog(null, "Signed UP!");
 					// LoginPage.main();
 				} catch (XmppStringprepException | NoResponseException | XMPPErrorException | NotConnectedException
 						| InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
