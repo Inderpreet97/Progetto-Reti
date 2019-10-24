@@ -11,11 +11,7 @@ import java.util.Stack;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.chat2.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -33,9 +29,6 @@ import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
-import org.jxmpp.stringprep.XmppStringprepException;
-
-import progettoreti.Maven_Smack4.progettoreti.Maven_Smack4.Application.App;
 
 public class Application {
 
@@ -59,10 +52,6 @@ public class Application {
 		private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
 		public static Roster roster;
 		private static Scanner reader;
-		
-		public static void getInstanceForConnection() {
-			roster = Roster.getInstanceFor(connection);
-		}
 
 		public static void connect() throws SmackException, IOException, XMPPException, InterruptedException {
 			// Create the configuration for this new connection
@@ -106,6 +95,7 @@ public class Application {
 				presence.setStatus("Online");
 				connection.sendStanza(presence);
 				App.logged = true;
+				updateFriendList();
 				
 			} catch (XMPPException ex) {
 				
@@ -124,12 +114,12 @@ public class Application {
 			
 		}
 
-		public static void singIn(String username, String password) throws XmppStringprepException, NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
+		public static void singIn(String username, String password) {
 			try {	
 				AccountManager manager = AccountManager.getInstance(connection);
 				Localpart user = Localpart.from(username);
 
-				manager.sensitiveOperationOverInsecureConnection(true); 	// It lets to create a new account
+				manager.sensitiveOperationOverInsecureConnection(true); 	// It lets create a new account
 				manager.createAccount(user, password);						// Create the account
 				manager.sensitiveOperationOverInsecureConnection(false); 	// It does not allow to create a new account
 
@@ -141,7 +131,7 @@ public class Application {
 				System.out.println("Premere un tasto per continuare...");
 				reader.nextLine();
 			} catch (Exception ex) {
-				System.out.println("\nERRORE DURANTE IL LOGIN.");
+				System.out.println("\nERRORE DURANTE LA REGISTRAZIONE.");
 				System.out.println(ex.getMessage());
 			}
 
@@ -170,7 +160,7 @@ public class Application {
 
 		}
 
-		public static boolean addFriend(String friendUsername) throws XmppStringprepException, NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException, NotLoggedInException {
+		public static boolean addFriend(String friendUsername) {
 			// This function add a friend, true -> friend added, false -> user not found
 			
 			try {

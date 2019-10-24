@@ -96,14 +96,15 @@ public class LoginPage {
 				if (App.logged) {
 					System.out.println("Login corrected");
 					frame.dispose();
-					HomePage homePage = new HomePage();
+					HomePage.main();
 					App.loggedUsername = usernameField.getText();
-					homePage.main();
+					
 				}else {
 					JOptionPane.showMessageDialog(null, "Wrong username or password");
 				}
 			}
 		});
+		
 		loginButton.setBounds(233, 188, 114, 25);
 		frame.getContentPane().add(loginButton);
 		

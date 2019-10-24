@@ -7,9 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import progettoreti.Maven_Smack4.progettoreti.Maven_Smack4.Application.App;
