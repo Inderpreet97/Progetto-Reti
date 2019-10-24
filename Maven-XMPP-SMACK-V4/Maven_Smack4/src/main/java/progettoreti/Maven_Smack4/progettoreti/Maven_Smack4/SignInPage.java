@@ -94,8 +94,8 @@ public class SignInPage {
 					App.singIn(username, password);
 					JOptionPane.showMessageDialog(null, "Signed UP!");
 					// LoginPage.main();
-				} catch (XmppStringprepException | NoResponseException | XMPPErrorException | NotConnectedException
-						| InterruptedException e) {
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
