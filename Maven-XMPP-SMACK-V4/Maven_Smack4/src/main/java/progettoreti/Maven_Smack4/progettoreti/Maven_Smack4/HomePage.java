@@ -21,10 +21,12 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JPanel;
 import java.awt.FlowLayout;
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
 import java.awt.Font;
-import java.awt.GridLayout;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import java.awt.Component;
+import java.awt.Color;
+import javax.swing.border.LineBorder;
 
 public class HomePage {
 
@@ -33,7 +35,7 @@ public class HomePage {
 	private JPanel header;
 	private JPanel main;
 	private JPanel footer;
-	private JList<Object> list;
+	/* TODO private ArrayList<JPanel> friendListPanels = new ArrayList<JPanel>(); */
 
 	/**
 	 * Launch the application.
@@ -68,14 +70,14 @@ public class HomePage {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 432, 0 };
 		gridBagLayout.rowHeights = new int[] { 45, 161, 35, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 1.0, 1.0, 1.0, Double.MIN_VALUE };
 		frame.getContentPane().setLayout(gridBagLayout);
 
 		// Header Panel contente la barra di ricerca
 		header = new JPanel();
 		GridBagConstraints gbc_header = new GridBagConstraints();
-		gbc_header.insets = new Insets(0, 0, 5, 0);
+		gbc_header.insets = new Insets(5, 5, 5, 5);
 		gbc_header.gridx = 0;
 		gbc_header.gridy = 0;
 		frame.getContentPane().add(header, gbc_header);
@@ -109,32 +111,55 @@ public class HomePage {
 
 		// Main Panel Contente la lista Amici
 		main = new JPanel();
+		main.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		main.setBackground(Color.LIGHT_GRAY);
 		GridBagConstraints gbc_main = new GridBagConstraints();
 		gbc_main.fill = GridBagConstraints.BOTH;
-		gbc_main.insets = new Insets(0, 0, 5, 0);
+		gbc_main.insets = new Insets(5, 5, 5, 5);
 		gbc_main.gridx = 0;
 		gbc_main.gridy = 1;
 		frame.getContentPane().add(main, gbc_main);
-		main.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		// TODO Customizzare le Jlist per avere >Nome Username Stato NuoviMessaggi<
-		list = new JList<Object>();
-		list.setModel(new AbstractListModel<Object>() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			String[] values = new String[] { "asd", "asd", "asd", "asd", "ad", "asd", "asd" };
+		// TODO Working on JPanel and JLabels
+		// TODO Sistemare bori friendPanel, Aggiungere spazio tra un FriendPanel e l'altro
+		App.updateFriendList();
+		Collection<RosterEntry> friendEntries = App.friendList;
 
-			public int getSize() {
-				return values.length;
+		if (!friendEntries.isEmpty()) {
+			for (RosterEntry entry : friendEntries) {
+				
+				// Creo un JPanel per ogni amico
+				JPanel friendPanel = new JPanel();
+				friendPanel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+				friendPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+				friendPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+				main.add(friendPanel);
+				
+				// Inserisco nel JPanel diversi Label per stampare le info sull'amico
+				// Friend Name
+				JLabel nomeLabel = new JLabel(entry.getName());
+				nomeLabel.setAlignmentX(new Float(0.0));
+				friendPanel.add(nomeLabel);
+				
+				// Username Name
+				JLabel usernameLabel = new JLabel(entry.getJid().getLocalpartOrNull().toString());
+				usernameLabel.setAlignmentX(new Float(0.5));
+				friendPanel.add(usernameLabel);
+				
+				// Stato Name
+				String stato = App.roster.getPresence(entry.getJid()).getType().toString();
+				JLabel statoLabel = new JLabel(stato);
+				statoLabel.setAlignmentX(new Float(1));
+				friendPanel.add(statoLabel);
+				
+				friendPanel.setLayout(new BoxLayout(friendPanel, BoxLayout.X_AXIS));
+				
 			}
+		} else {
+			System.out.println("Lista amici vuota!");
+		}
 
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
-		main.add(list);
+		main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));		
 
 		// Footer Panel contente Button Logout
 		footer = new JPanel();
@@ -214,7 +239,7 @@ public class HomePage {
 
 		});
 
-		// Getting the friend list
+		/* Getting the friend list
 		int dim = -1;
 		try {
 
@@ -232,19 +257,21 @@ public class HomePage {
 				System.out.println("Lista amici vuota!");
 			}
 
-			/*
-			 * if (!entries.isEmpty()) { JLabel lblWelcomeToChat = new
-			 * JLabel("List friends: " + Integer.toString(entries.size()));
-			 * lblWelcomeToChat.setBounds(140, 108, 180, 43);
-			 * frame.getContentPane().add(lblWelcomeToChat); } else { JLabel
-			 * lblWelcomeToChat = new JLabel("List friends: " +
-			 * Integer.toString(entries.size())); lblWelcomeToChat.setBounds(140, 108, 180,
-			 * 43); frame.getContentPane().add(lblWelcomeToChat); }
-			 */
+			
+			  if (!entries.isEmpty()) { JLabel lblWelcomeToChat = new
+			  JLabel("List friends: " + Integer.toString(entries.size()));
+			  lblWelcomeToChat.setBounds(140, 108, 180, 43);
+			  frame.getContentPane().add(lblWelcomeToChat); } else { JLabel
+			  lblWelcomeToChat = new JLabel("List friends: " +
+			  Integer.toString(entries.size())); lblWelcomeToChat.setBounds(140, 108, 180,
+			  43); frame.getContentPane().add(lblWelcomeToChat); }
+			 
 		} catch (Exception ex) {
 			System.out.println("Errore: " + ex.getMessage());
 			System.out.println(Integer.toString(dim));
 		}
+		
+		*/
 
 	}
 }
