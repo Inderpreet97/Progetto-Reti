@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -18,11 +19,17 @@ import javafx.scene.text.*;
 
 
 public class Main extends Application {
+	
+	Stage window;
+    Scene scene1, scene2;
+    
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			primaryStage.setTitle("Unipr Messenger");
+			window = primaryStage;
+			window.setTitle("Unipr Messenger");
 			
+
 			GridPane grid = new GridPane();
 			grid.setAlignment(Pos.CENTER);
 			grid.setHgap(10);
@@ -57,11 +64,26 @@ public class Main extends Application {
 			btn.setOnAction((e) -> {
 				actiontarget.setFill(Color.FIREBRICK);
 				actiontarget.setText("Sign in button pressed");
+				
+				// TODO call App.Login() which return True if logged in correctl
+				window.setScene(scene2);
 			});
 			
-			Scene scene = new Scene(grid,400,400);
-			primaryStage.setScene(scene);
-			primaryStage.show();
+	        scene1 = new Scene(grid, 400, 400);
+
+
+	        //Button 2
+	        Button button2 = new Button("This sucks, go back to scene 1");
+	        button2.setOnAction(e -> window.setScene(scene1));
+
+	        //Layout 2
+	        StackPane layout2 = new StackPane();
+	        layout2.getChildren().add(button2);
+	        scene2 = new Scene(layout2, 400, 400);
+
+	        //Display scene 1 at first
+	        window.setScene(scene1);
+	        window.show();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
