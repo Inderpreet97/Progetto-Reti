@@ -1,6 +1,5 @@
 package application;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,7 +9,6 @@ import java.util.Stack;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat2.*;
 import org.jivesoftware.smack.packet.Message;
@@ -53,7 +51,7 @@ public class Application {
 		public static Roster roster;
 		private static Scanner reader;
 
-		public static void connect() throws SmackException, IOException, XMPPException, InterruptedException {
+		public static Boolean connect() {
 			// Create the configuration for this new connection
 			// XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
 			try {
@@ -62,14 +60,11 @@ public class Application {
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
 				connection = new XMPPTCPConnection(configBuilder.build());
-			} catch (Exception ex) {
-				System.out.println(ex.getMessage());
-			}
-
-			try {
 				connection.connect();
+				return true;
 			} catch (Exception ex) {
-				System.out.println(ex.getMessage());
+				ex.printStackTrace();
+				return false;
 			}
 		}
 
@@ -81,7 +76,7 @@ public class Application {
 			}
 		}
 
-		public static void login(String username, String password) throws XMPPException, SmackException, IOException, InterruptedException {
+		public static Boolean login(String username, String password) {
 			try {
 				
 				// Log into the server
@@ -96,19 +91,22 @@ public class Application {
 				connection.sendStanza(presence);
 				App.logged = true;
 				updateFriendList();
-				
+
+				return true;
 			} catch (XMPPException ex) {
 				
 				System.out.println("\nERRORE DURANTE IL LOGIN.");
-				System.out.println("XMPPException: " + ex.getMessage());
+				ex.printStackTrace();
 				System.out.println("Potrebbero essere stati inseriti username e/o password sbagliati.");
 				System.out.println("Premere un tasto per continuare...");
 				connection.disconnect();
-				connection.connect();
-			
+				
+				return false;
 				
 			} catch (Exception ex) {
-				System.out.println("\nERRORE: " + ex.getMessage());
+				ex.printStackTrace();
+				
+				return false;
 			}
 		
 			
