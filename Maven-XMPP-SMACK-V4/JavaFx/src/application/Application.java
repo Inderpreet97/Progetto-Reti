@@ -59,8 +59,8 @@ public class Application {
 				configBuilder.setPort(XMPPServerPort);
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
-				connection = new XMPPTCPConnection(configBuilder.build());
-				connection.connect();
+				setConnection(new XMPPTCPConnection(configBuilder.build()));
+				getConnection().connect();
 				return true;
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -70,7 +70,7 @@ public class Application {
 
 		public static void disconnect() {
 			try {
-				connection.disconnect();
+				getConnection().disconnect();
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
 			}
@@ -80,26 +80,27 @@ public class Application {
 			try {
 				
 				// Log into the server
-				connection.login(username, password);
+				getConnection().login(username, password);
 				loggedUsername = username;
 				
 				// Tutto questo pezzo di codice lo mettiamo in una funzione? Può tornare utile?
-				roster = Roster.getInstanceFor(connection);
+				roster = Roster.getInstanceFor(getConnection());
 				roster.setSubscriptionMode(SubscriptionMode.accept_all);
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
-				connection.sendStanza(presence);
+				getConnection().sendStanza(presence);
 				App.logged = true;
 				updateFriendList();
 
 				return true;
 			} catch (XMPPException ex) {
 				
+				// TODO Rimuovere questi print prima di consegnare il codice
 				System.out.println("\nERRORE DURANTE IL LOGIN.");
 				ex.printStackTrace();
 				System.out.println("Potrebbero essere stati inseriti username e/o password sbagliati.");
 				System.out.println("Premere un tasto per continuare...");
-				connection.disconnect();
+				getConnection().disconnect();
 				
 				return false;
 				
@@ -114,7 +115,7 @@ public class Application {
 
 		public static void singIn(String username, String password) {
 			try {	
-				AccountManager manager = AccountManager.getInstance(connection);
+				AccountManager manager = AccountManager.getInstance(getConnection());
 				Localpart user = Localpart.from(username);
 
 				manager.sensitiveOperationOverInsecureConnection(true); 	// It lets create a new account
@@ -138,7 +139,7 @@ public class Application {
 
 		public static void IncomingMessageListener() {
 			// Creating a listener for incoming messages
-			ChatManager chatManager = ChatManager.getInstanceFor(connection);
+			ChatManager chatManager = ChatManager.getInstanceFor(getConnection());
 
 			chatManager.addIncomingListener(new IncomingChatMessageListener() {
 				public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
@@ -167,7 +168,7 @@ public class Application {
 
 				DomainBareJid searchService = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
 
-				UserSearchManager search = new UserSearchManager(connection);
+				UserSearchManager search = new UserSearchManager(getConnection());
 
 				Form searchForm = search.getSearchForm(searchService);
 				Form answerForm = searchForm.createAnswerForm();
@@ -243,6 +244,14 @@ public class Application {
 				}
 			}
 			return false;
+		}
+
+		public static AbstractXMPPConnection getConnection() {
+			return connection;
+		}
+
+		public static void setConnection(AbstractXMPPConnection connection) {
+			App.connection = connection;
 		}
 
 	}

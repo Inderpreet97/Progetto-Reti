@@ -62,7 +62,7 @@ class LoginScene {
 					// Connect to OpenFire Server
 					if (App.connect()) {
 						if (App.login(username, password)) {
-							Main.window.setScene(Main.hompageScene);
+							Main.window.setScene(Main.homepageScene);
 							
 						} else {
 							actiontarget.setFill(Color.FIREBRICK);
@@ -92,7 +92,7 @@ class LoginScene {
 					// Connect to OpenFire Server
 					if (App.connect()) {
 						if (App.login(username, password)) {
-							Main.window.setScene(Main.hompageScene);
+							Main.window.setScene(Main.homepageScene);
 							
 						} else {
 							actiontarget.setFill(Color.FIREBRICK);
@@ -120,7 +120,7 @@ class LoginScene {
 				// Connect to OpenFire Server
 				if (App.connect()) {
 					if (App.login(username, password)) {
-						Main.window.setScene(Main.hompageScene);
+						Main.window.setScene(Main.homepageScene);
 						
 					} else {
 						actiontarget.setFill(Color.FIREBRICK);
