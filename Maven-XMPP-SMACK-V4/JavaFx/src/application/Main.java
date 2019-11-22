@@ -1,5 +1,6 @@
 package application;
 
+import application.Application.App;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -17,10 +18,14 @@ public class Main extends Application {
 		try {
 			window = primaryStage;
 			window.setTitle("Unipr Messenger");
-
+			
+			window.setOnCloseRequest((event) -> {
+					App.disconnect();
+			});
+			
 			createLoginScene();
 			createhompageScene();
-
+			
 			// Display scene 1 at first
 			window.setScene(loginScene);
 			window.show();
