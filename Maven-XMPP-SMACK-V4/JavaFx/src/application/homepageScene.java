@@ -58,9 +58,9 @@ class HomepageScene {
 		footer.getChildren().add(btnLogout);
 
 		// Main Content Nodes
-		TilePane aContact = new ContactListElement("Giuseppe","Urbano","Online","new*").getContactElement();
-		TilePane aContact2 = new ContactListElement("Giuseppe","Urbano","Online","new*").getContactElement();
-		TilePane aContact3 = new ContactListElement("Giuseppe","Urbano","Online","new*").getContactElement();
+		TilePane aContact = new ContactListElement("Giuseppe","Urbano","Online","new*");
+		TilePane aContact2 = new ContactListElement("Giuseppe","Urbano","Online","new*");
+		TilePane aContact3 = new ContactListElement("Giuseppe","Urbano","Online","new*");
 		mainContent.getChildren().add(aContact);
 		mainContent.getChildren().add(aContact2);
 		mainContent.getChildren().add(aContact3);
