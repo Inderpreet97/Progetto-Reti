@@ -8,7 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -37,6 +37,7 @@ class HomepageScene {
 		// Homepage Main Content VBox
 		VBox mainContent = new VBox();
 		mainContent.setPadding(new Insets(10));
+		mainContent.setSpacing(5);
 		mainContent.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 		homepageLayout.setCenter(mainContent);
 
@@ -57,12 +58,26 @@ class HomepageScene {
 		footer.getChildren().add(btnLogout);
 
 		// Main Content Nodes
-		// ListView Example
+		TilePane aContact = new ContactListElement("Giuseppe","Urbano","Online","new*").getContactElement();
+		TilePane aContact2 = new ContactListElement("Giuseppe","Urbano","Online","new*").getContactElement();
+		TilePane aContact3 = new ContactListElement("Giuseppe","Urbano","Online","new*").getContactElement();
+		mainContent.getChildren().add(aContact);
+		mainContent.getChildren().add(aContact2);
+		mainContent.getChildren().add(aContact3);
+		
+		/**
+		 *  TODO AGGIUNGERE CONTATTI
+		 *  https://code.makery.ch/it/library/javafx-tutorial/part2/
+		 */
+		// TODO Provare con Table View
+		
+		/* ListView Example
 		final ObservableList<String> lefts = FXCollections.observableArrayList("A", "B", "C");
 		final ListView<String> leftListView = new ListView<String>(lefts);
 		leftListView.setPrefWidth(150);
 		leftListView.setPrefHeight(150);
 		mainContent.getChildren().add(leftListView);
+		*/
 
 		// Create Scene with BorderPane homepageLayout
 		setHomepageScene(new Scene(homepageLayout, 400, 400));

@@ -1,5 +1,4 @@
 package application;
-
 import application.Application.App;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -20,7 +19,7 @@ public class Main extends Application {
 				if(App.getConnection() != null)
 				App.disconnect();
 			});
-
+			
 			loginScene = new LoginScene().getLoginScene();
 			homepageScene = new HomepageScene().getHomepageScene();
 
