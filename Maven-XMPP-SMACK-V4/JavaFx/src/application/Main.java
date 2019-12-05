@@ -1,4 +1,6 @@
 package application;
+import java.util.HashMap;
+
 import application.Application.App;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -8,6 +10,8 @@ public class Main extends Application {
 
 	static Stage window;
 	static Scene loginScene, homepageScene;
+	
+	static HashMap<String, Stage> openChats = new HashMap<String, Stage>();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -18,6 +22,11 @@ public class Main extends Application {
 			window.setOnCloseRequest((event) -> {
 				if(App.getConnection() != null)
 				App.disconnect();
+				
+				// Chiudi tutte le chat aperte
+				openChats.forEach((chatUsername, chatStage) -> {
+					chatStage.close();
+				});
 			});
 			
 			loginScene = new LoginScene().getLoginScene();
