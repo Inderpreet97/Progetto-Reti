@@ -60,7 +60,7 @@ class ContactListElement extends TilePane{
 
 			public void handle(MouseEvent e) {
 				/*
-				 *  TODO Create a new Window with chat
+				 *  Create a new Window with chat
 				 *  but first check the openChats HASHMAP
 				 *  
 				 *  if there is a already a window with the chat,

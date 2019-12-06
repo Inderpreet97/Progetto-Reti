@@ -49,6 +49,12 @@ class HomepageScene {
 		Button btnLogout = new Button("Logout");
 		btnLogout.setOnAction(e -> {
 			App.disconnect();
+			
+			// Chiudi tutte le chat aperte
+			Main.openChats.forEach((chatUsername, chatStage) -> {
+				chatStage.close();
+			});
+			
 			Main.window.setScene(Main.loginScene);
 		});
 
