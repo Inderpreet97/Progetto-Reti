@@ -1,5 +1,7 @@
 package application;
 
+import java.util.ArrayList;
+
 import application.Application.App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -61,13 +63,17 @@ class HomepageScene {
 		footer.setAlignment(Pos.BOTTOM_RIGHT);
 		footer.getChildren().add(btnLogout);
 
+		ArrayList<TilePane> friendListTilePanes = new ArrayList<TilePane>();
+		
 		// Main Content Nodes
-		TilePane aContact = new ContactListElement("Giuseppe","beppe","Online","new*");
-		TilePane aContact2 = new ContactListElement("Giuseppe1","beppe1","Online","new*");
-		TilePane aContact3 = new ContactListElement("Giuseppe2","beppe2","Online","new*");
-		mainContent.getChildren().add(aContact);
-		mainContent.getChildren().add(aContact2);
-		mainContent.getChildren().add(aContact3);
+		if (App.logged) {
+			App.getFriendList().forEach((entry) -> {
+				friendListTilePanes.add(new ContactListElement(entry.getName(),entry.getJid().toString(),App.roster.getPresence(entry.getJid()).getStatus(), " "));
+			});
+			
+			mainContent.getChildren().addAll(friendListTilePanes);
+		}
+		
 		
 		/**
 		 *  TODO AGGIUNGERE CONTATTI

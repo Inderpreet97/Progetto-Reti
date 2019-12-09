@@ -42,7 +42,7 @@ public class Application {
 		// LoggedUser variables
 		public static String loggedUsername;
 		public static boolean logged = false;
-		public static Collection<RosterEntry> friendList;
+		private static Collection<RosterEntry> friendList;
 		
 		// Variables
 		private static boolean onChat = false;

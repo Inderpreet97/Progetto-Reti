@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 
 class ChatStage extends Stage {
 	
+	// fafdaddsad
+	
 	private TextArea textArea;
 	private TextField messageField;
 	private BorderPane pageLayout;
