@@ -10,48 +10,46 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 class ChatStage extends Stage {
-	
-	// fafdaddsad
-	
+
 	private TextArea textArea;
 	private TextField messageField;
 	private BorderPane pageLayout;
-	
+
 	public ChatStage(String username){
 		super();
-		
+
 		this.setTitle(username);
 
 		this.setOnCloseRequest((event) -> {
 			if(App.getConnection() != null)
 			App.disconnect();
 		});
-		
-		
+
+
 		textArea = new TextArea();
-		
+
 		textArea.setEditable(false);
 		textArea.setMaxHeight(getMaxHeight());
         textArea.setPadding(new Insets(10));
         textArea.setFocusTraversable(false);
-        
+
         messageField = new TextField();
         messageField.setPromptText("Type message here");
-        
+
         messageField.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-            	
+
             	// Print on my Chat
             	if(textArea.getText().isEmpty()) {
             		textArea.appendText("You: " + messageField.getText());
             	} else {
             		textArea.appendText("\nYou: " + messageField.getText());
             	}
-            	
+
                 // TODO Invia il messaggio
-                
+
             } else {
-            	
+
             	// TODO invia "Sta scrivendo"
             }
         });
