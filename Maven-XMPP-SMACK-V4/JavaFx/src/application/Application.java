@@ -45,24 +45,21 @@ public class Application {
 		public static boolean logged = false;
 		private static Collection<RosterEntry> friendList;
 
-
 		private static HashMap<String, Chat> openChats = new HashMap<String, Chat>();
 		private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
 		public static Roster roster;
-		private static Scanner reader;
 
 		public static Boolean connect() {
-			// Create the configuration for this new connection
-			// XMPPTCPConnectionConfiguration.Builder configBuilder =
-			// XMPPTCPConnectionConfiguration.builder();
+			configBuilder = XMPPTCPConnectionConfiguration.builder();
+
 			try {
 				configBuilder.setSecurityMode(SecurityMode.disabled);
 				configBuilder.setPort(XMPPServerPort);
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
-				// configBuilder.enableDefaultDebugger();
-				setConnection(new XMPPTCPConnection(configBuilder.build()));
-				getConnection().connect();
+				configBuilder.enableDefaultDebugger();
+				connection = new XMPPTCPConnection(configBuilder.build());
+				connection.connect();
 				return true;
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -72,7 +69,10 @@ public class Application {
 
 		public static void disconnect() {
 			try {
-				getConnection().disconnect();
+				loggedUsername = "";
+				logged = false;
+				roster = null;
+				connection.disconnect();
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
 			}
@@ -82,16 +82,16 @@ public class Application {
 			try {
 
 				// Log into the server
-				getConnection().login(username, password);
+				connection.login(username, password);
 				loggedUsername = username;
 				App.logged = true;
 
 				// Tutto questo pezzo di codice lo mettiamo in una funzione? PuÃ² tornare utile?
-				roster = Roster.getInstanceFor(getConnection());
+				roster = Roster.getInstanceFor(connection);
 				roster.setSubscriptionMode(SubscriptionMode.accept_all);
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
-				getConnection().sendStanza(presence);
+				connection.sendStanza(presence);
 				IncomingMessageListener();
 				updateFriendList();
 
@@ -103,7 +103,7 @@ public class Application {
 				ex.printStackTrace();
 				System.out.println("Potrebbero essere stati inseriti username e/o password sbagliati.");
 				System.out.println("Premere un tasto per continuare...");
-				getConnection().disconnect();
+				connection.disconnect();
 
 				return false;
 
@@ -117,7 +117,7 @@ public class Application {
 
 		public static void singIn(String username, String password) {
 			try {
-				AccountManager manager = AccountManager.getInstance(getConnection());
+				AccountManager manager = AccountManager.getInstance(connection);
 				Localpart user = Localpart.from(username);
 
 				manager.sensitiveOperationOverInsecureConnection(true); // It lets create a new account
@@ -126,47 +126,27 @@ public class Application {
 
 				System.out.println("Account registrato correttamente");
 			} catch (XMPPException ex) {
-				System.out.println("ERRORE DURANTE LA REGISTRAZIONE DI UN ACCOUNT.");
-				System.out.println(ex.getMessage());
-				System.out.println("L'username inserito potrebbe essere giÃ  registrato.");
-				System.out.println("Premere un tasto per continuare...");
-				reader.nextLine();
+				ex.printStackTrace();
 			} catch (Exception ex) {
-				System.out.println("\nERRORE DURANTE LA REGISTRAZIONE.");
-				System.out.println(ex.getMessage());
+				ex.printStackTrace();
 			}
 
 		}
 
-		// TODO Create chat
 		public static boolean CreateChat(String username) {
 
-			// ===================== CREAZIONE DI UNA CHAT =============================
-
+			// Se la chat non è già aperta
 			if (!openChats.containsKey(username)) {
 				try {
-					
-					System.out.println("Creating chat with " + username);
 					EntityBareJid jid = JidCreate.entityBareFrom(username + XMPPDomain);
 
 					Chat chat = chatManager.chatWith(jid);
-					
-					((ChatStage) Main.openChats.get(username)).putMessage("Prova");
+
 					openChats.put(username, chat);
-					
-					System.out.println("Chat created with " + username);
-					/**
-					 * TODO aggiunge Chat chat in una lista di chat rimuovere questo oggetto quando
-					 * user chiude la finestra di chat
-					 */
 
 					// New messages while i was online but not in chat
 					if (incomingMessages.containsKey(username)) {
-						
-						System.out.println("Printing message of " + username);
-						
 						incomingMessages.get(username).forEach(message -> {
-							System.out.println(username + ": " + message.getBody());
 							((ChatStage) Main.openChats.get(username)).putMessage(message.getBody());
 						});
 						incomingMessages.remove(username);
@@ -176,7 +156,6 @@ public class Application {
 					ex.printStackTrace();
 				}
 			}
-			// ==========================================================================
 			return false;
 		}
 
@@ -201,6 +180,7 @@ public class Application {
 
 		/**
 		 * Check if a Chat with a user is open
+		 * 
 		 * @param username
 		 * @return true if chat is open, false otherwise
 		 */
@@ -237,17 +217,15 @@ public class Application {
 
 		public static void IncomingMessageListener() {
 			// Creating a listener for incoming messages
-			chatManager = ChatManager.getInstanceFor(getConnection());
-			
+			chatManager = ChatManager.getInstanceFor(connection);
+
 			chatManager.addIncomingListener(new IncomingChatMessageListener() {
 				public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
 					String senderUsername = from.getLocalpart().toString();
-					
+
 					if (isChatOpen(senderUsername)) {
-						System.out.println("Messaggio in entrata da " + senderUsername);
 						((ChatStage) Main.openChats.get(senderUsername)).putMessage(message.getBody());
 					} else {
-						System.out.println("Messaggio in entrata da " + senderUsername + " salvato in memoria");
 						if (incomingMessages.containsKey(senderUsername)) {
 							incomingMessages.get(senderUsername).add(message);
 						} else {
@@ -269,7 +247,7 @@ public class Application {
 
 				DomainBareJid searchService = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
 
-				UserSearchManager search = new UserSearchManager(getConnection());
+				UserSearchManager search = new UserSearchManager(connection);
 
 				Form searchForm = search.getSearchForm(searchService);
 				Form answerForm = searchForm.createAnswerForm();
@@ -322,17 +300,17 @@ public class Application {
 		public static boolean updateFriendList() {
 			// Updating the friend list
 			try {
+				System.out.println("\n\n\n\n Size : " + roster.getEntries() + "\n\n\n");
 				friendList = roster.getEntries();
 				return true;
 			} catch (Exception ex) {
-				System.out.println(ex.getMessage());
+				ex.printStackTrace();
 			}
 			return false;
 		}
 
 		public static Collection<RosterEntry> getFriendList() {
-			Collection<RosterEntry> entries = roster.getEntries();
-			friendList = entries;
+			updateFriendList();
 			// Return the collection of entries
 			return friendList;
 		}

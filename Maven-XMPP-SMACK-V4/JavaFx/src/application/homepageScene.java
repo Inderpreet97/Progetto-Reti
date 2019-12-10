@@ -57,6 +57,7 @@ class HomepageScene {
 				chatStage.close();
 			});
 			
+			Main.loginScene = new LoginScene().getLoginScene();
 			Main.window.setScene(Main.loginScene);
 		});
 
@@ -67,6 +68,7 @@ class HomepageScene {
 		
 		// Main Content Nodes
 		if (App.logged) {
+			System.out.println(App.getFriendList().size());
 			App.getFriendList().forEach((entry) -> {
 				String name = entry.getName();
 				String presence = App.roster.getPresence(entry.getJid()).getStatus();
