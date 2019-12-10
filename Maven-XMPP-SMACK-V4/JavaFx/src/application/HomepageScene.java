@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 
 class HomepageScene {
 	private Scene homepageScene = null;
+	private VBox mainContent = null;
 
 	HomepageScene() {
 		Background backgroundColor = new Background(
@@ -35,7 +36,7 @@ class HomepageScene {
 		homepageLayout.setBottom(footer);
 
 		// Homepage Main Content VBox
-		VBox mainContent = new VBox();
+		mainContent = new VBox();
 		mainContent.setPadding(new Insets(10));
 		mainContent.setSpacing(5);
 		mainContent.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -50,6 +51,7 @@ class HomepageScene {
 		// Footer Logout Button
 		Button btnLogout = new Button("Logout");
 		btnLogout.setOnAction(e -> {
+		
 			App.disconnect();
 			
 			// Chiudi tutte le chat aperte
@@ -57,8 +59,8 @@ class HomepageScene {
 				chatStage.close();
 			});
 			
-			Main.loginScene = new LoginScene().getLoginScene();
-			Main.window.setScene(Main.loginScene);
+			Main.loginSceneClass = new LoginScene();
+			Main.window.setScene(Main.loginSceneClass.getLoginScene());
 		});
 
 		footer.setAlignment(Pos.BOTTOM_RIGHT);
@@ -66,9 +68,14 @@ class HomepageScene {
 
 		ArrayList<TilePane> friendListTilePanes = new ArrayList<TilePane>();
 		
+		// Wait until roster get loaded
+		while (!App.roster.isLoaded()) {
+			
+		}
+		
 		// Main Content Nodes
 		if (App.logged) {
-			System.out.println(App.getFriendList().size());
+			
 			App.getFriendList().forEach((entry) -> {
 				String name = entry.getName();
 				String presence = App.roster.getPresence(entry.getJid()).getStatus();

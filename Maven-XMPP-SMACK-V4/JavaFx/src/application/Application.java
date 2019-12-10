@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Stack;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -27,6 +26,7 @@ import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
+
 
 public class Application {
 
@@ -57,7 +57,7 @@ public class Application {
 				configBuilder.setPort(XMPPServerPort);
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
-				configBuilder.enableDefaultDebugger();
+				//configBuilder.enableDefaultDebugger();
 				connection = new XMPPTCPConnection(configBuilder.build());
 				connection.connect();
 				return true;
@@ -88,6 +88,7 @@ public class Application {
 
 				// Tutto questo pezzo di codice lo mettiamo in una funzione? Può tornare utile?
 				roster = Roster.getInstanceFor(connection);
+				
 				roster.setSubscriptionMode(SubscriptionMode.accept_all);
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
@@ -97,19 +98,12 @@ public class Application {
 
 				return true;
 			} catch (XMPPException ex) {
-
-				// TODO Rimuovere questi print prima di consegnare il codice
-				System.out.println("\nERRORE DURANTE IL LOGIN.");
 				ex.printStackTrace();
-				System.out.println("Potrebbero essere stati inseriti username e/o password sbagliati.");
-				System.out.println("Premere un tasto per continuare...");
 				connection.disconnect();
-
 				return false;
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
-
 				return false;
 			}
 
@@ -123,7 +117,8 @@ public class Application {
 				manager.sensitiveOperationOverInsecureConnection(true); // It lets create a new account
 				manager.createAccount(user, password); // Create the account
 				manager.sensitiveOperationOverInsecureConnection(false); // It does not allow to create a new account
-
+				
+				// XXX Debug print
 				System.out.println("Account registrato correttamente");
 			} catch (XMPPException ex) {
 				ex.printStackTrace();
@@ -214,6 +209,8 @@ public class Application {
 		public static void SendStanzaTyping() {
 
 		}
+		
+		
 
 		public static void IncomingMessageListener() {
 			// Creating a listener for incoming messages
@@ -292,7 +289,7 @@ public class Application {
 
 				return false;
 			} catch (Exception ex) {
-				System.out.println("Error: " + ex.getMessage());
+				ex.printStackTrace();
 				return false;
 			}
 		}
@@ -300,7 +297,6 @@ public class Application {
 		public static boolean updateFriendList() {
 			// Updating the friend list
 			try {
-				System.out.println("\n\n\n\n Size : " + roster.getEntries() + "\n\n\n");
 				friendList = roster.getEntries();
 				return true;
 			} catch (Exception ex) {

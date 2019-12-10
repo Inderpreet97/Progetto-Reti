@@ -4,14 +4,13 @@ import java.util.HashMap;
 import application.Application.App;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
 
 public class Main extends Application {
-
+	
+	static LoginScene loginSceneClass;
+	static HomepageScene homepageSceneClass;
+	
 	static Stage window;
-	static Scene loginScene;
-	static Scene homepageScene; // This scene will be set by loginScene if
-								// login is correct
 	
 	/**
 	 * 	Collection contiene le Chat Aperte, con un riferimento all'username
@@ -37,10 +36,10 @@ public class Main extends Application {
 				});
 			});
 			
-			loginScene = new LoginScene().getLoginScene();
+			loginSceneClass =  new LoginScene();
 
 			// Display scene 1 at first
-			window.setScene(loginScene);
+			window.setScene(loginSceneClass.getLoginScene());
 			window.show();
 		} catch (Exception e) {
 			e.printStackTrace();

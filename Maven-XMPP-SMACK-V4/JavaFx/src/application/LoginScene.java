@@ -95,8 +95,9 @@ class LoginScene {
 			if (App.connect()) {
 				if (App.login(username, password)) {
 					passwordField.clear();
-					Main.homepageScene =  new HomepageScene().getHomepageScene();
-					Main.window.setScene(Main.homepageScene);
+					
+					Main.homepageSceneClass =  new HomepageScene();
+					Main.window.setScene(Main.homepageSceneClass.getHomepageScene());
 
 				} else {
 					passwordField.clear();
