@@ -6,12 +6,13 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	
+
 	static LoginScene loginSceneClass;
 	static HomepageScene homepageSceneClass;
-	
+	static RegistrationScene registrationSceneClass;
+
 	static Stage window;
-	
+
 	/**
 	 * 	Collection contiene le Chat Aperte, con un riferimento all'username
 	 *  con il quale stiamo messaggiando e un riferimento alla "finestra"
@@ -29,13 +30,13 @@ public class Main extends Application {
 			window.setOnCloseRequest((event) -> {
 				if(App.getConnection() != null)
 				App.disconnect();
-				
+
 				// Chiudi tutte le chat aperte
 				openChats.forEach((chatUsername, chatStage) -> {
 					chatStage.close();
 				});
 			});
-			
+
 			loginSceneClass =  new LoginScene();
 
 			// Display scene 1 at first
@@ -49,10 +50,10 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		/**
 		 * IL MAIN NON VA TOCCATO
-		 * 
-		 * Il metodo launch è dichiarato nella super class Application launch(args)
+		 *
+		 * Il metodo launch ï¿½ dichiarato nella super class Application launch(args)
 		 * corrisponde a scrivere launch(this, args) Quindi conosce la classe che ha
-		 * chiamato il metodo. Sarà proprio il metodo launch a chiamare il metodo start
+		 * chiamato il metodo. Sarï¿½ proprio il metodo launch a chiamare il metodo start
 		 * della classe che ha chiamato launch.
 		 **/
 

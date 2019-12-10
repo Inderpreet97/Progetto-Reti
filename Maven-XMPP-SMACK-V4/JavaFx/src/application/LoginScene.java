@@ -25,6 +25,7 @@ class LoginScene {
 	private Label passwordLabel;
 	private PasswordField passwordField;
 	private Button btn;
+	private Button signUpBtn;
 	private HBox hbBtn;
 	private final Text actiontarget;
 
@@ -56,6 +57,10 @@ class LoginScene {
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn);
 		grid.add(hbBtn, 1, 4);
+		
+		signUpBtn = new Button("Sign up");
+		hbBtn.getChildren().add(signUpBtn);
+		grid.add(hbBtn, 1, 5);
 
 		actiontarget = new Text();
 		grid.add(actiontarget, 1, 6);
@@ -73,6 +78,11 @@ class LoginScene {
 		});
 
 		btn.setOnAction((e) -> attemptLogin());
+		
+		signUpBtn.setOnAction((e) -> {
+			Main.RegistrationScene = new RegistrationScene().get; 
+			Main.window.setScene(Main.RegistrationScene);
+		});
 
 		setLoginScene(new Scene(grid, 400, 400));
 	}

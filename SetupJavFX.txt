@@ -1,0 +1,8 @@
+1) Scaricare javafx jre da internet
+2) Salvare la cartella contenente le lib di java fx nella cartella C:/Programmi/java/
+
+Se creo un javaProject, aggiungo tutte le librerie javaFX nel classPath del buildPath del progetto ed eseguo
+nel run configuration --> Arguments --> VM arguments del progetto --module "<PathJavaFx>\lib" -- --add-modules javafx.controls,javafx.fxml
+Se creo un MavenProject,  vado direttamente nel run configuration 
+--> Arguments --> 
+VM arguments del progetto --module "<PathJavaFx>\lib" -- --add-modules javafx.controls,javafx.fxml

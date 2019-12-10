@@ -17,6 +17,7 @@ class HomepageScene {
 	private VBox mainContent = null;
 
 	HomepageScene() {
+		
 		Background backgroundColor = new Background(
 				new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY));
 
