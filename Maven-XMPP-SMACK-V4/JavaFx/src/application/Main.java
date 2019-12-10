@@ -10,6 +10,7 @@ public class Main extends Application {
 
 	static Stage window;
 	static Scene loginScene;
+	static Scene RegistrationScene;
 	static Scene homepageScene; // This scene will be set by loginScene if
 								// login is correct
 	

@@ -16,6 +16,7 @@ class HomepageScene {
 	private Scene homepageScene = null;
 
 	HomepageScene() {
+		
 		Background backgroundColor = new Background(
 				new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY));
 
