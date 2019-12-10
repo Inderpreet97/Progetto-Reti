@@ -52,18 +52,19 @@ class LoginScene {
 		passwordField = new PasswordField();
 		grid.add(passwordField, 1, 2);
 
+		// Sing in button
 		btn = new Button("Sign in");
 		hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn);
-		grid.add(hbBtn, 1, 4);
 		
+		// Sign up button
 		signUpBtn = new Button("Sign up");
 		hbBtn.getChildren().add(signUpBtn);
-		grid.add(hbBtn, 1, 5);
+		grid.add(hbBtn, 0, 4, 2 ,1);
 
 		actiontarget = new Text();
-		grid.add(actiontarget, 1, 6);
+		grid.add(actiontarget, 1, 5);
 
 		userTextField.setOnKeyReleased((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
@@ -80,8 +81,8 @@ class LoginScene {
 		btn.setOnAction((e) -> attemptLogin());
 		
 		signUpBtn.setOnAction((e) -> {
-			Main.RegistrationScene = new RegistrationScene().get; 
-			Main.window.setScene(Main.RegistrationScene);
+			Main.registrationSceneClass = new RegistrationScene();
+			Main.window.setScene(Main.registrationSceneClass.getRegistrationScene());
 		});
 
 		setLoginScene(new Scene(grid, 400, 400));

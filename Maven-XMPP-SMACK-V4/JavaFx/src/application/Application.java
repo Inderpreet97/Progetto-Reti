@@ -109,21 +109,25 @@ public class Application {
 
 		}
 
-		public static void singIn(String username, String password) {
+		public static boolean registerUser(String username, String password) {
 			try {
 				AccountManager manager = AccountManager.getInstance(connection);
 				Localpart user = Localpart.from(username);
 
 				manager.sensitiveOperationOverInsecureConnection(true); // It lets create a new account
 				manager.createAccount(user, password); // Create the account
-				manager.sensitiveOperationOverInsecureConnection(false); // It does not allow to create a new account
+				manager.sensitiveOperationOverInsecureConnection(false); // It does not allow to create a new account				
 				
 				// XXX Debug print
 				System.out.println("Account registrato correttamente");
+				return true;
+				
 			} catch (XMPPException ex) {
 				ex.printStackTrace();
+				return false;
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				return false;
 			}
 
 		}

@@ -17,7 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 class RegistrationScene {
-	private Scene loginScene = null;
+	private Scene registrationScene = null;
 	private Text sceneTitle;
 	
 	private GridPane grid;
@@ -31,6 +31,7 @@ class RegistrationScene {
 	private PasswordField passwordFieldConfirm;
 	
 	private Button btn;
+	private Button backBtn;
 	private HBox hbBtn;
 	private final Text actiontarget;
 	
@@ -68,7 +69,13 @@ class RegistrationScene {
 		hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn);
-		grid.add(hbBtn, 1, 4);
+		
+		// Back Button
+		backBtn = new Button("Back");
+		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
+		hbBtn.getChildren().add(backBtn);
+		
+		grid.add(hbBtn, 0, 4, 2, 1);
 
 		actiontarget = new Text();
 		grid.add(actiontarget, 1, 6);
@@ -79,8 +86,6 @@ class RegistrationScene {
 			}
 		});
 
-		
-		
 		passwordFieldChoose.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				attemptRegistration();
@@ -93,17 +98,20 @@ class RegistrationScene {
 			}
 		});
 
+		// Sign up button action
 		btn.setOnAction((e) -> attemptRegistration());
+		
+		// Back button action
+		backBtn.setOnAction((e) -> {
+			Main.loginSceneClass = new LoginScene();
+			Main.window.setScene(Main.loginSceneClass.getLoginScene());
+		});
 
-		setLoginScene(new Scene(grid, 400, 400));
+		registrationScene = new Scene(grid, 400, 400);
 	}
 	
-	public Scene getLoginScene() {
-		return loginScene;
-	}
-
-	public void setLoginScene(Scene loginScene) {
-		this.loginScene = loginScene;
+	public Scene getRegistrationScene() {
+		return registrationScene;
 	}
 
 	private void attemptRegistration() {
@@ -118,18 +126,18 @@ class RegistrationScene {
 				
 				// Connect to OpenFire Server
 				if (App.connect()) {
-					if (App.login(username, passwordChoose)) {
+					if (App.registerUser(username, passwordChoose)) {
 						
 						passwordFieldChoose.clear();
 						passwordFieldConfirm.clear();
-						Main.loginScene = new LoginScene().getLoginScene();
-						Main.window.setScene(Main.loginScene);
+						Main.loginSceneClass = new LoginScene();
+						Main.window.setScene(Main.loginSceneClass.getLoginScene());
 
 					} else {
 						passwordFieldChoose.clear();
 						passwordFieldConfirm.clear();
 						actiontarget.setFill(Color.FIREBRICK);
-						actiontarget.setText("Username or Password is wrong");
+						actiontarget.setText("Registration failed");
 					}
 
 				} else {
@@ -142,7 +150,7 @@ class RegistrationScene {
 				passwordFieldChoose.clear();
 				passwordFieldConfirm.clear();
 				actiontarget.setFill(Color.FIREBRICK);
-				actiontarget.setText("Passwords are NOT equals");
+				actiontarget.setText("Passwords are NOT equal");
 			}
 			
 		} else {
