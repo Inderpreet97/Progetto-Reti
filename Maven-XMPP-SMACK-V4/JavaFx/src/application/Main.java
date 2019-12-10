@@ -9,8 +9,15 @@ import javafx.scene.Scene;
 public class Main extends Application {
 
 	static Stage window;
-	static Scene loginScene, homepageScene;
+	static Scene loginScene;
+	static Scene homepageScene; // This scene will be set by loginScene if
+								// login is correct
 	
+	/**
+	 * 	Collection contiene le Chat Aperte, con un riferimento all'username
+	 *  con il quale stiamo messaggiando e un riferimento alla "finestra"
+	 *  di chat
+	 */
 	static HashMap<String, Stage> openChats = new HashMap<String, Stage>();
 
 	@Override
@@ -19,6 +26,7 @@ public class Main extends Application {
 			window = primaryStage;
 			window.setTitle("Unipr Messenger");
 
+			// Evento chiusura della finestra
 			window.setOnCloseRequest((event) -> {
 				if(App.getConnection() != null)
 				App.disconnect();
@@ -30,7 +38,6 @@ public class Main extends Application {
 			});
 			
 			loginScene = new LoginScene().getLoginScene();
-			homepageScene = new HomepageScene().getHomepageScene();
 
 			// Display scene 1 at first
 			window.setScene(loginScene);

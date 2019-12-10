@@ -1,5 +1,6 @@
 package application;
 
+import application.Application.App;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -68,6 +69,10 @@ class ContactListElement extends TilePane{
 				 */
 				if( ! Main.openChats.containsKey(aContactUsername)) {
 					Main.openChats.put(aContactUsername, new ChatStage(aContactUsername));
+					
+					// XMPP Chat
+					App.CreateChat(aContactUsername);
+					
 				} else {
 					// TODO debug only
 					System.out.println("Chat with " + aContactUsername + " already open");

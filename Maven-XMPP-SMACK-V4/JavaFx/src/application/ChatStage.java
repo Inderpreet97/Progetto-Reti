@@ -15,52 +15,77 @@ class ChatStage extends Stage {
 	private TextField messageField;
 	private BorderPane pageLayout;
 
-	public ChatStage(String username){
-		super();
+	private String destinationUsername;
 
-		this.setTitle(username);
+	public ChatStage(String username) {
+		super();
+		destinationUsername = username;
+
+		this.setTitle(destinationUsername);
 
 		this.setOnCloseRequest((event) -> {
-			if(App.getConnection() != null)
-			App.disconnect();
+			if (App.getConnection() != null)
+				App.disconnect();
 		});
-
 
 		textArea = new TextArea();
 
 		textArea.setEditable(false);
 		textArea.setMaxHeight(getMaxHeight());
-        textArea.setPadding(new Insets(10));
-        textArea.setFocusTraversable(false);
+		textArea.setPadding(new Insets(10));
+		textArea.setFocusTraversable(false);
 
-        messageField = new TextField();
-        messageField.setPromptText("Type message here");
+		messageField = new TextField();
+		messageField.setPromptText("Type message here");
 
-        messageField.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ENTER) {
+		messageField.setOnKeyPressed(e -> {
+			if (App.isChatOpen(username)) {
+				if (e.getCode() == KeyCode.ENTER) {
+					String message = messageField.getText();
+					messageField.clear();
+					// Print on my Chat
+					if (textArea.getText().isEmpty()) {
+						textArea.appendText("You: " + message);
+					} else {
+						textArea.appendText("\nYou: " + message);
+					}
+					// Invia messaggio all'utente finale
+					App.SendMessageTo(destinationUsername, message);
+					
+				} else {
+					// TODO invia "Sta scrivendo"
+				}
 
-            	// Print on my Chat
-            	if(textArea.getText().isEmpty()) {
-            		textArea.appendText("You: " + messageField.getText());
-            	} else {
-            		textArea.appendText("\nYou: " + messageField.getText());
-            	}
+			} else {
+				textArea.appendText(">> Chat not opened correctly");
+			}
+		});
 
-                // TODO Invia il messaggio
+		// Evento chiusura della finestra
+		this.setOnCloseRequest((event) -> {
+			// Rimuovi questa chat dalla lista delle chat aperte
+			Main.openChats.remove(destinationUsername);
+			// Rimuovi chat da "backend"
+			App.closeChat(destinationUsername);
+		});
 
-            } else {
+		pageLayout = new BorderPane();
+		pageLayout.setPadding(new Insets(10));
+		pageLayout.setCenter(textArea);
+		BorderPane.setMargin(textArea, new Insets(0, 0, 10, 0));
+		pageLayout.setBottom(messageField);
 
-            	// TODO invia "Sta scrivendo"
-            }
-        });
-
-        pageLayout = new BorderPane();
-        pageLayout.setPadding(new Insets(10));
-        pageLayout.setCenter(textArea);
-        BorderPane.setMargin(textArea, new Insets(0,0,10,0));
-        pageLayout.setBottom(messageField);
-
-        this.setScene(new Scene(pageLayout, 400, 400));
+		this.setScene(new Scene(pageLayout, 400, 400));
 		this.show();
+	}
+
+	public void putMessage(String incomingMessage) {
+		System.out.print("asdasd");
+		// Print on my Chat
+		if (textArea.getText().isEmpty()) {
+			textArea.appendText(destinationUsername + ": " + incomingMessage);
+		} else {
+			textArea.appendText("\n" + destinationUsername + ": " + incomingMessage);
+		}
 	}
 }

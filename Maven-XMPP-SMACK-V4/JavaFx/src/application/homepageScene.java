@@ -68,26 +68,25 @@ class HomepageScene {
 		// Main Content Nodes
 		if (App.logged) {
 			App.getFriendList().forEach((entry) -> {
-				friendListTilePanes.add(new ContactListElement(entry.getName(),entry.getJid().toString(),App.roster.getPresence(entry.getJid()).getStatus(), " "));
+				String name = entry.getName();
+				String presence = App.roster.getPresence(entry.getJid()).getStatus();
+				String username = "";
+				
+				if(presence == null) {
+					presence = "Offline";
+				}
+				
+				try {
+					username = entry.getJid().getLocalpartOrThrow().toString();
+				} catch (Exception e) {
+					
+				}
+				
+				friendListTilePanes.add(new ContactListElement(name, username, presence, " "));
 			});
 			
 			mainContent.getChildren().addAll(friendListTilePanes);
 		}
-		
-		
-		/**
-		 *  TODO AGGIUNGERE CONTATTI
-		 *  https://code.makery.ch/it/library/javafx-tutorial/part2/
-		 */
-		// TODO Provare con Table View
-		
-		/* ListView Example
-		final ObservableList<String> lefts = FXCollections.observableArrayList("A", "B", "C");
-		final ListView<String> leftListView = new ListView<String>(lefts);
-		leftListView.setPrefWidth(150);
-		leftListView.setPrefHeight(150);
-		mainContent.getChildren().add(leftListView);
-		*/
 
 		// Create Scene with BorderPane homepageLayout
 		setHomepageScene(new Scene(homepageLayout, 400, 400));
