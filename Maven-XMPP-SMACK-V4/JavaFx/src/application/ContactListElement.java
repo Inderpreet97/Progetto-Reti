@@ -12,7 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 
-class ContactListElement extends TilePane{
+class ContactListElement extends TilePane {
 
 	private Background backgroundColor = new Background(
 			new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY));
@@ -37,7 +37,7 @@ class ContactListElement extends TilePane{
 		// TODO Il TilePane deve occupare tutto il VBox che è il parent di TilePane
 		// https://docs.oracle.com/javafx/2/layout/size_align.htm
 		// https://amyfowlersblog.wordpress.com/2010/05/26/javafx-1-3-growing-shrinking-and-filling/
-		// 
+		//
 		this.setBackground(backgroundColor);
 		this.setPadding(new Insets(10, 10, 10, 10));
 		this.setVgap(5);
@@ -60,49 +60,58 @@ class ContactListElement extends TilePane{
 		this.getChildren().add(this.aContactNewMessages);
 
 		// Click on TilePane to Open a Chat
-		this.addEventHandler(MouseEvent.MOUSE_PRESSED,
-				new EventHandler<MouseEvent>() {
+		this.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
 			public void handle(MouseEvent e) {
 				/*
-				 *  Create a new Window with chat
-				 *  but first check the openChats HASHMAP
-				 *  
-				 *  if there is a already a window with the chat,
-				 *  then do nothing, else open chat window
+				 * Create a new Window with chat but first check the openChats HASHMAP
+				 * 
+				 * if there is a already a window with the chat, then do nothing, else open chat
+				 * window
 				 */
-				if( ! Main.openChats.containsKey(aContactUsername)) {
-					
+				if (!Main.openChats.containsKey(aContactUsername)) {
+
 					// Ho aperto la chat con l'utente rimuovo il tag "New Messages"
 					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
 						if (((ContactListElement) tilePane).getUsername().equals(aContactUsername)) {
-								((ContactListElement) tilePane).removeNewMessagesNotification();
+							((ContactListElement) tilePane).removeNewMessagesNotification();
 						}
 					});
-					
+
 					Main.openChats.put(aContactUsername, new ChatStage(aContactUsername));
-					
+
 					// XMPP Chat
 					App.CreateChat(aContactUsername);
-					
-				} else {
-					// TODO debug only
-					System.out.println("Chat with " + aContactUsername + " already open");
+
 				}
 				
+//				// TODO debug only
+//				else {
+//					System.out.println("Chat with " + aContactUsername + " already open");
+//				}
+
 			}
 		});
 	}
-	
+
+	public void openChat() {
+		if (!Main.openChats.containsKey(aContactUsername.getText())) {
+			Main.openChats.put(aContactUsername.getText(), new ChatStage(aContactUsername.getText()));
+		}
+
+		// XMPP Chat
+		App.CreateChat(aContactUsername.getText());
+	}
+
 	public void setNewMessagesNotification() {
 		this.aContactNewMessages.setText("New Messages");
 	}
-	
+
 	public void removeNewMessagesNotification() {
 		this.aContactNewMessages.setText(" ");
 	}
-	
-	public String getUsername () {
+
+	public String getUsername() {
 		return this.aContactUsername.getText();
 	}
 }

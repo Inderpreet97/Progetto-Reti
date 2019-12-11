@@ -145,7 +145,7 @@ public class Application {
 					openChats.put(username, chat);
 
 					// New messages while i was online but not in chat
-					if (incomingMessages.containsKey(username)) {	
+					if (incomingMessages.containsKey(username)) {
 						incomingMessages.get(username).forEach(message -> {
 							((ChatStage) Main.openChats.get(username)).putMessage(message.getBody());
 						});
@@ -230,20 +230,21 @@ public class Application {
 						// Add Tag new messages on ContactListElement
 						Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
 							if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
-								
-								/*	MODIFICA UI DA THREAD NON JAVA FX
+
+								/*
+								 * MODIFICA UI DA THREAD NON JAVA FX
 								 * 
-								 *  Essendo Application.App un'applicazione NON JAVA FX non dovrebbe
-								 *  modificare gli elementi di JavaFx quindi, usiamo il metodo runLater
-								 *  per aggiungere la modifica della UI in un Thread JavaFX (l'ultima
-								 *  affermazione potrebbe non essere corretta)
-								 *  
-								 *  Se chiamassi setNewMessagesNotification() fuori dalla lambda il
-								 *  programma in runtime lancia l'eccezione:
-								 *  
-								 *  java.lang.IllegalStateException: Not on FX application thread; 
-								 *  currentThread = Smack Listener Processor (0)
-								 *  
+								 * Essendo Application.App un'applicazione NON JAVA FX non dovrebbe modificare
+								 * gli elementi di JavaFx quindi, usiamo il metodo runLater per aggiungere la
+								 * modifica della UI in un Thread JavaFX (l'ultima affermazione potrebbe non
+								 * essere corretta)
+								 * 
+								 * Se chiamassi setNewMessagesNotification() fuori dalla lambda il programma in
+								 * runtime lancia l'eccezione:
+								 * 
+								 * java.lang.IllegalStateException: Not on FX application thread; currentThread
+								 * = Smack Listener Processor (0)
+								 * 
 								 */
 								Platform.runLater(() -> {
 									((ContactListElement) tilePane).setNewMessagesNotification();
@@ -263,6 +264,65 @@ public class Application {
 
 		}
 
+		/**
+		 * 
+		 * @param friendUsername
+		 * @return
+		 */
+		public static boolean searchFriendServer(String friendUsername) {
+			try {
+				EntityBareJid friendJid = JidCreate.entityBareFrom(friendUsername + XMPPDomain);
+
+				DomainBareJid searchService = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
+
+				UserSearchManager search = new UserSearchManager(connection);
+
+				Form searchForm = search.getSearchForm(searchService);
+				Form answerForm = searchForm.createAnswerForm();
+
+				answerForm.setAnswer("Username", true);
+				answerForm.setAnswer("search", friendUsername);
+
+				ReportedData data = search.getSearchResults(answerForm, searchService);
+
+				if (data != null) {
+					List<Row> rows = data.getRows();
+					Iterator<Row> it = rows.iterator();
+
+					if (!it.hasNext()) {
+						return false;
+						
+					} else {
+						boolean userFound = false;
+						while (it.hasNext()) {
+							Row row = it.next();
+							List<CharSequence> values = row.getValues("username");
+							
+							if (values.contains(App.loggedUsername)) {
+								return false;
+							}
+							
+							if (values.contains(friendUsername) ) {
+								return true;
+							}
+						}
+						if (!userFound) {
+							return false;
+						}
+					}
+				}
+				return false;
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				return false;
+			}
+		}
+
+		/**
+		 * 
+		 * @param friendUsername
+		 * @return
+		 */
 		public static boolean addFriend(String friendUsername) {
 			// This function add a friend, true -> friend added, false -> user not found
 
@@ -293,7 +353,11 @@ public class Application {
 						while (it.hasNext()) {
 							Row row = it.next();
 							List<CharSequence> values = row.getValues("username");
-
+							
+							if (values.contains(App.loggedUsername)) {
+								return false;
+							}
+							
 							if (values.contains(friendUsername)) {
 
 								// Adds friend to friend list. The second parameter is the nickname, in this
@@ -304,7 +368,7 @@ public class Application {
 								roster.sendSubscriptionRequest(friendJid);
 								updateFriendList();
 								return true;
-							}
+							} 
 						}
 
 						if (!userFound) {
@@ -321,7 +385,11 @@ public class Application {
 				return false;
 			}
 		}
-
+		
+		/**
+		 * 
+		 * @return
+		 */
 		public static boolean updateFriendList() {
 			// Updating the friend list
 			try {
@@ -333,27 +401,45 @@ public class Application {
 			return false;
 		}
 
+		/**
+		 * 
+		 * @return
+		 */
 		public static Collection<RosterEntry> getFriendList() {
 			updateFriendList();
 			// Return the collection of entries
 			return friendList;
 		}
-
+		
+		/**
+		 * 
+		 * @param friendUsername
+		 * @return
+		 */
 		public static boolean checkIfUserInFriendList(String friendUsername) {
 			// This function check if a friend with that friendUsername is already in the
 			// friendList
+
 			for (RosterEntry friend : friendList) {
-				if (friend.getName().equals(friendUsername)) {
+				if (friend.getJid().getLocalpartOrNull().toString().equals(friendUsername)) {
 					return true;
 				}
 			}
 			return false;
 		}
-
+		
+		/**
+		 * 
+		 * @return
+		 */
 		public static AbstractXMPPConnection getConnection() {
 			return connection;
 		}
-
+		
+		/**
+		 * 
+		 * @param connection
+		 */
 		public static void setConnection(AbstractXMPPConnection connection) {
 			App.connection = connection;
 		}
