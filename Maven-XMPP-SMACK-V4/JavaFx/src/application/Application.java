@@ -27,6 +27,7 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 
+import javafx.application.Platform;
 
 public class Application {
 
@@ -57,7 +58,7 @@ public class Application {
 				configBuilder.setPort(XMPPServerPort);
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
-				//configBuilder.enableDefaultDebugger();
+				// configBuilder.enableDefaultDebugger();
 				connection = new XMPPTCPConnection(configBuilder.build());
 				connection.connect();
 				return true;
@@ -88,7 +89,7 @@ public class Application {
 
 				// Tutto questo pezzo di codice lo mettiamo in una funzione? Può tornare utile?
 				roster = Roster.getInstanceFor(connection);
-				
+
 				roster.setSubscriptionMode(SubscriptionMode.accept_all);
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
@@ -116,12 +117,12 @@ public class Application {
 
 				manager.sensitiveOperationOverInsecureConnection(true); // It lets create a new account
 				manager.createAccount(user, password); // Create the account
-				manager.sensitiveOperationOverInsecureConnection(false); // It does not allow to create a new account				
-				
+				manager.sensitiveOperationOverInsecureConnection(false); // It does not allow to create a new account
+
 				// XXX Debug print
 				System.out.println("Account registrato correttamente");
 				return true;
-				
+
 			} catch (XMPPException ex) {
 				ex.printStackTrace();
 				return false;
@@ -144,7 +145,7 @@ public class Application {
 					openChats.put(username, chat);
 
 					// New messages while i was online but not in chat
-					if (incomingMessages.containsKey(username)) {
+					if (incomingMessages.containsKey(username)) {	
 						incomingMessages.get(username).forEach(message -> {
 							((ChatStage) Main.openChats.get(username)).putMessage(message.getBody());
 						});
@@ -213,8 +214,6 @@ public class Application {
 		public static void SendStanzaTyping() {
 
 		}
-		
-		
 
 		public static void IncomingMessageListener() {
 			// Creating a listener for incoming messages
@@ -227,6 +226,31 @@ public class Application {
 					if (isChatOpen(senderUsername)) {
 						((ChatStage) Main.openChats.get(senderUsername)).putMessage(message.getBody());
 					} else {
+
+						// Add Tag new messages on ContactListElement
+						Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
+							if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
+								
+								/*	MODIFICA UI DA THREAD NON JAVA FX
+								 * 
+								 *  Essendo Application.App un'applicazione NON JAVA FX non dovrebbe
+								 *  modificare gli elementi di JavaFx quindi, usiamo il metodo runLater
+								 *  per aggiungere la modifica della UI in un Thread JavaFX (l'ultima
+								 *  affermazione potrebbe non essere corretta)
+								 *  
+								 *  Se chiamassi setNewMessagesNotification() fuori dalla lambda il
+								 *  programma in runtime lancia l'eccezione:
+								 *  
+								 *  java.lang.IllegalStateException: Not on FX application thread; 
+								 *  currentThread = Smack Listener Processor (0)
+								 *  
+								 */
+								Platform.runLater(() -> {
+									((ContactListElement) tilePane).setNewMessagesNotification();
+								});
+							}
+						});
+
 						if (incomingMessages.containsKey(senderUsername)) {
 							incomingMessages.get(senderUsername).add(message);
 						} else {

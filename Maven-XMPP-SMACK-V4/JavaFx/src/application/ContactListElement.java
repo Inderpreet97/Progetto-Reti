@@ -22,12 +22,16 @@ class ContactListElement extends TilePane{
 	private Label aContactStatus;
 	private Label aContactNewMessages;
 
-	public ContactListElement(String aContactName, String aContactUsername, String aContactStatus, String aContactNewMessages) {
+	public ContactListElement(String aContactName, String aContactUsername, String aContactStatus) {
 		super();
 		this.aContactName = new Label(aContactName);
+		this.aContactName.setPrefWidth(85);
 		this.aContactUsername = new Label(aContactUsername);
+		this.aContactUsername.setPrefWidth(85);
 		this.aContactStatus = new Label(aContactStatus);
-		this.aContactNewMessages = new Label(aContactNewMessages);
+		this.aContactStatus.setPrefWidth(85);
+		this.aContactNewMessages = new Label("");
+		this.aContactNewMessages.setPrefWidth(85);
 
 		// contat list element to return
 		// TODO Il TilePane deve occupare tutto il VBox che è il parent di TilePane
@@ -68,6 +72,14 @@ class ContactListElement extends TilePane{
 				 *  then do nothing, else open chat window
 				 */
 				if( ! Main.openChats.containsKey(aContactUsername)) {
+					
+					// Ho aperto la chat con l'utente rimuovo il tag "New Messages"
+					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
+						if (((ContactListElement) tilePane).getUsername().equals(aContactUsername)) {
+								((ContactListElement) tilePane).removeNewMessagesNotification();
+						}
+					});
+					
 					Main.openChats.put(aContactUsername, new ChatStage(aContactUsername));
 					
 					// XMPP Chat
@@ -80,5 +92,17 @@ class ContactListElement extends TilePane{
 				
 			}
 		});
+	}
+	
+	public void setNewMessagesNotification() {
+		this.aContactNewMessages.setText("New Messages");
+	}
+	
+	public void removeNewMessagesNotification() {
+		this.aContactNewMessages.setText(" ");
+	}
+	
+	public String getUsername () {
+		return this.aContactUsername.getText();
 	}
 }
