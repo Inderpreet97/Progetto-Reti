@@ -74,6 +74,7 @@ class ChatStage extends Stage {
 		pageLayout.setCenter(textArea);
 		BorderPane.setMargin(textArea, new Insets(0, 0, 10, 0));
 		pageLayout.setBottom(messageField);
+		
 
 		this.setScene(new Scene(pageLayout, 400, 400));
 		this.show();

@@ -7,14 +7,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 class HomepageScene {
 	private Scene homepageScene = null;
 	private VBox mainContent = null;
+	private ArrayList<TilePane> friendListTilePanes;
+	
 
 	HomepageScene() {
 		
@@ -28,6 +29,7 @@ class HomepageScene {
 		// Homepage Header HBox
 		HBox header = new HBox();
 		header.setPadding(new Insets(10));
+		header.setSpacing(5);
 		homepageLayout.setTop(header);
 
 		// Homepage Footer HBox
@@ -44,9 +46,15 @@ class HomepageScene {
 		homepageLayout.setCenter(mainContent);
 
 		// Header Nodes
-		Label exampleLabel = new Label("This is an example Header Label");
-		exampleLabel.setTextFill(Color.web("#0076a3"));
-		header.getChildren().add(exampleLabel);
+		TextField searchText = new TextField();
+		searchText.setPromptText("Search user");
+		searchText.setPrefWidth(300);
+		searchText.setFocusTraversable(false);
+		header.getChildren().add(searchText);
+		
+		Button btnSearch = new Button("Search");
+		btnSearch.setPrefWidth(100);
+		header.getChildren().add(btnSearch);
 
 		// Footer Nodes
 		// Footer Logout Button
@@ -67,7 +75,7 @@ class HomepageScene {
 		footer.setAlignment(Pos.BOTTOM_RIGHT);
 		footer.getChildren().add(btnLogout);
 
-		ArrayList<TilePane> friendListTilePanes = new ArrayList<TilePane>();
+		friendListTilePanes = new ArrayList<TilePane>();
 		
 		// Wait until roster get loaded
 		while (!App.roster.isLoaded()) {
@@ -92,21 +100,21 @@ class HomepageScene {
 					
 				}
 				
-				friendListTilePanes.add(new ContactListElement(name, username, presence, " "));
+				friendListTilePanes.add(new ContactListElement(name, username, presence));
 			});
 			
 			mainContent.getChildren().addAll(friendListTilePanes);
 		}
 
 		// Create Scene with BorderPane homepageLayout
-		setHomepageScene(new Scene(homepageLayout, 400, 400));
+		homepageScene = new Scene(homepageLayout, 400, 400);
 	}
-
+	
+	public ArrayList<TilePane> getFriendListTilePanes() {
+		return friendListTilePanes;
+	}
+	
 	public Scene getHomepageScene() {
 		return homepageScene;
-	}
-
-	public void setHomepageScene(Scene homepageScene) {
-		this.homepageScene = homepageScene;
 	}
 }
