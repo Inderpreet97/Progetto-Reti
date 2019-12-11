@@ -17,6 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 class LoginScene {
+	
 	private Scene loginScene = null;
 	private Text sceneTitle;
 	private Label userName;
@@ -52,15 +53,16 @@ class LoginScene {
 		passwordField = new PasswordField();
 		grid.add(passwordField, 1, 2);
 
+		// Sign up button
+		signUpBtn = new Button("Sign up");
+		hbBtn.getChildren().add(signUpBtn);
+		
 		// Sing in button
 		btn = new Button("Sign in");
 		hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn);
 		
-		// Sign up button
-		signUpBtn = new Button("Sign up");
-		hbBtn.getChildren().add(signUpBtn);
 		grid.add(hbBtn, 0, 4, 2 ,1);
 
 		actiontarget = new Text();
