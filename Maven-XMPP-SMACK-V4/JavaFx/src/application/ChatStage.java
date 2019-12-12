@@ -53,7 +53,7 @@ class ChatStage extends Stage {
 					App.SendMessageTo(destinationUsername, message);
 					
 				} else {
-					// TODO invia "Sta scrivendo"
+					// NOT IMPLEMENTED "Sta scrivendo"
 				}
 
 			} else {
@@ -81,7 +81,6 @@ class ChatStage extends Stage {
 	}
 
 	public void putMessage(String incomingMessage) {
-		System.out.print("asdasd");
 		// Print on my Chat
 		if (textArea.getText().isEmpty()) {
 			textArea.appendText(destinationUsername + ": " + incomingMessage);

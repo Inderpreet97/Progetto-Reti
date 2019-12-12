@@ -57,7 +57,11 @@ public class Application {
 		private static HashMap<String, Chat> openChats = new HashMap<String, Chat>();
 		private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
 		public static Roster roster;
-
+		
+		/**
+		 * 
+		 * @return
+		 */
 		public static Boolean connect() {
 			configBuilder = XMPPTCPConnectionConfiguration.builder();
 
@@ -76,7 +80,10 @@ public class Application {
 				return false;
 			}
 		}
-
+		
+		/**
+		 * 
+		 */
 		public static void disconnect() {
 			try {
 				loggedUsername = "";
@@ -84,10 +91,16 @@ public class Application {
 				roster = null;
 				connection.disconnect();
 			} catch (Exception ex) {
-				System.out.println(ex.getMessage());
+				ex.printStackTrace();
 			}
 		}
-
+		
+		/**
+		 * 
+		 * @param username
+		 * @param password
+		 * @return
+		 */
 		public static Boolean login(String username, String password) {
 			try {
 
@@ -123,7 +136,13 @@ public class Application {
 			}
 
 		}
-
+		
+		/**
+		 * 
+		 * @param username
+		 * @param password
+		 * @return
+		 */
 		public static boolean registerUser(String username, String password) {
 			try {
 				AccountManager manager = AccountManager.getInstance(connection);
@@ -146,7 +165,12 @@ public class Application {
 			}
 
 		}
-
+		
+		/**
+		 * 
+		 * @param username
+		 * @return
+		 */
 		public static boolean CreateChat(String username) {
 
 			// Se la chat non è già aperta
@@ -223,13 +247,11 @@ public class Application {
 			}
 			return false;
 		}
-
-		// TODO forse servirà send Stanza I'm Typing
-		public static void SendStanzaTyping() {
-
-		}
-
-		public static void OfflineMessageListener() {
+		
+		/**
+		 * 
+		 */
+		private static void OfflineMessageListener() {
 			OfflineMessageManager mOfflineMessageManager = new OfflineMessageManager(connection);
 
 			try {
@@ -272,8 +294,11 @@ public class Application {
 			} 
 			return false;
 		}
-
-		public static void IncomingMessageListener() {
+		
+		/**
+		 * 
+		 */
+		private static void IncomingMessageListener() {
 			// Creating a listener for incoming messages
 			chatManager = ChatManager.getInstanceFor(connection);
 
@@ -320,13 +345,15 @@ public class Application {
 			});
 		}
 		
-		public static void incomingPresenceListener() {
+		/**
+		 * 
+		 */
+		private static void incomingPresenceListener() {
 			roster.addPresenceEventListener(new PresenceEventListener(){
 
 				@Override
 				public void presenceAvailable(FullJid address, Presence availablePresence) {
 					
-					// TODO Auto-generated method stub
 					String senderUsername = address.getLocalpartOrNull().toString();
 					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
 						if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
@@ -340,7 +367,7 @@ public class Application {
 
 				@Override
 				public void presenceUnavailable(FullJid address, Presence presence) {
-					// TODO Auto-generated method stub
+					
 					String senderUsername = address.getLocalpartOrNull().toString();
 					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
 						if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
@@ -353,22 +380,13 @@ public class Application {
 				}
 
 				@Override
-				public void presenceError(Jid address, Presence errorPresence) {
-					// TODO Auto-generated method stub
-					
-				}
+				public void presenceError(Jid address, Presence errorPresence) {}
 
 				@Override
-				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {
-					// TODO Auto-generated method stub
-					
-				}
+				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {}
 
 				@Override
-				public void presenceUnsubscribed(BareJid address, Presence unsubscribedPresence) {
-					// TODO Auto-generated method stub
-					
-				}
+				public void presenceUnsubscribed(BareJid address, Presence unsubscribedPresence) {}
 			});
 		}
 		
@@ -456,7 +474,7 @@ public class Application {
 					Iterator<Row> it = rows.iterator();
 
 					if (!it.hasNext()) {
-						System.out.println("Nessun utente trovato con questo username " + friendUsername);
+						return false;
 					} else {
 						boolean userFound = false;
 						while (it.hasNext()) {
