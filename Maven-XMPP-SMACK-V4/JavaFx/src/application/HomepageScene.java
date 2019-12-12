@@ -3,6 +3,8 @@ package application;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.jivesoftware.smack.packet.Presence;
+
 import application.Application.App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -174,13 +176,10 @@ class HomepageScene {
 		if (App.logged) {
 
 			App.getFriendList().forEach((entry) -> {
+				
 				String name = entry.getName();
-				String presence = App.roster.getPresence(entry.getJid()).getStatus();
 				String username = "";
-
-				if (presence == null) {
-					presence = "Offline";
-				}
+				Presence presence = App.roster.getPresence(entry.getJid());
 
 				try {
 					username = entry.getJid().getLocalpartOrThrow().toString();
@@ -188,9 +187,16 @@ class HomepageScene {
 
 				}
 				
-				ContactListElement contactToAdd = new ContactListElement(name, username, presence);
+				ContactListElement contactToAdd = new ContactListElement(name, username);
+				
 				if(App.hasNewMessagesWhileOffline(username)) {
 					contactToAdd.setNewMessagesNotification();
+				}
+				
+				if(presence.isAvailable()) {
+					contactToAdd.setOnline();
+				} else {
+					contactToAdd.setOffline();
 				}
 				
 				friendListTilePanes.add(contactToAdd);

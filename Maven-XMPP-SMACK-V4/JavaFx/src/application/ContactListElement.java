@@ -22,13 +22,13 @@ class ContactListElement extends TilePane {
 	private Label aContactStatus;
 	private Label aContactNewMessages;
 
-	public ContactListElement(String aContactName, String aContactUsername, String aContactStatus) {
+	public ContactListElement(String aContactName, String aContactUsername) {
 		super();
 		this.aContactName = new Label(aContactName);
 		this.aContactName.setPrefWidth(85);
 		this.aContactUsername = new Label(aContactUsername);
 		this.aContactUsername.setPrefWidth(85);
-		this.aContactStatus = new Label(aContactStatus);
+		this.aContactStatus = new Label();
 		this.aContactStatus.setPrefWidth(85);
 		this.aContactNewMessages = new Label("");
 		this.aContactNewMessages.setPrefWidth(85);
@@ -101,7 +101,13 @@ class ContactListElement extends TilePane {
 	public void setNewMessagesNotification() {
 		this.aContactNewMessages.setText("New Messages");
 	}
-
+	
+	public void setOnline() {
+		this.aContactStatus.setText("online");
+	}
+	public void setOffline() {
+		this.aContactStatus.setText("offline");
+	}
 	public void removeNewMessagesNotification() {
 		this.aContactNewMessages.setText(" ");
 	}

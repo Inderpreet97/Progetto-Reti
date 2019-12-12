@@ -15,6 +15,7 @@ import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.chat2.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.PresenceEventListener;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.Roster.SubscriptionMode;
 import org.jivesoftware.smack.roster.RosterEntry;
@@ -26,8 +27,11 @@ import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.ReportedData.Row;
 import org.jivesoftware.smackx.search.UserSearchManager;
 import org.jivesoftware.smackx.xdata.Form;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 
@@ -93,7 +97,7 @@ public class Application {
 				OfflineMessageListener();
 				
 				loggedUsername = username;
-				App.logged = true;
+				logged = true;
 
 				// Tutto questo pezzo di codice lo mettiamo in una funzione? Può tornare utile?
 				roster = Roster.getInstanceFor(connection);
@@ -104,6 +108,7 @@ public class Application {
 				connection.sendStanza(presence);
 				
 				IncomingMessageListener();
+				incomingPresenceListener();
 				updateFriendList();
 
 				return true;
@@ -313,7 +318,58 @@ public class Application {
 					}
 				}
 			});
+		}
+		
+		public static void incomingPresenceListener() {
+			roster.addPresenceEventListener(new PresenceEventListener(){
 
+				@Override
+				public void presenceAvailable(FullJid address, Presence availablePresence) {
+					
+					// TODO Auto-generated method stub
+					String senderUsername = address.getLocalpartOrNull().toString();
+					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
+						if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
+
+							Platform.runLater(() -> {
+								((ContactListElement) tilePane).setOnline();
+							});
+						}
+					});
+				}
+
+				@Override
+				public void presenceUnavailable(FullJid address, Presence presence) {
+					// TODO Auto-generated method stub
+					String senderUsername = address.getLocalpartOrNull().toString();
+					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
+						if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
+
+							Platform.runLater(() -> {
+								((ContactListElement) tilePane).setOffline();
+							});
+						}
+					});
+				}
+
+				@Override
+				public void presenceError(Jid address, Presence errorPresence) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void presenceUnsubscribed(BareJid address, Presence unsubscribedPresence) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 		}
 		
 
@@ -351,7 +407,7 @@ public class Application {
 							Row row = it.next();
 							List<CharSequence> values = row.getValues("username");
 
-							if (values.contains(App.loggedUsername)) {
+							if (values.contains(loggedUsername)) {
 								return false;
 							}
 
@@ -407,7 +463,7 @@ public class Application {
 							Row row = it.next();
 							List<CharSequence> values = row.getValues("username");
 
-							if (values.contains(App.loggedUsername)) {
+							if (values.contains(loggedUsername)) {
 								return false;
 							}
 
