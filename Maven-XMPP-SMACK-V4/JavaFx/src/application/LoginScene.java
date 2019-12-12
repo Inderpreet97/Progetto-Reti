@@ -17,7 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 class LoginScene {
-	
+
 	private Scene loginScene = null;
 	private Text sceneTitle;
 	private Label userName;
@@ -55,15 +55,16 @@ class LoginScene {
 
 		// Sign up button
 		signUpBtn = new Button("Sign up");
+		hbBtn = new HBox(10);
 		hbBtn.getChildren().add(signUpBtn);
-		
+
 		// Sing in button
 		btn = new Button("Sign in");
-		hbBtn = new HBox(10);
+
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn);
-		
-		grid.add(hbBtn, 0, 4, 2 ,1);
+
+		grid.add(hbBtn, 0, 4, 2, 1);
 
 		actiontarget = new Text();
 		grid.add(actiontarget, 1, 5);
@@ -81,7 +82,7 @@ class LoginScene {
 		});
 
 		btn.setOnAction((e) -> attemptLogin());
-		
+
 		signUpBtn.setOnAction((e) -> {
 			Main.registrationSceneClass = new RegistrationScene();
 			Main.window.setScene(Main.registrationSceneClass.getRegistrationScene());
@@ -108,8 +109,8 @@ class LoginScene {
 			if (App.connect()) {
 				if (App.login(username, password)) {
 					passwordField.clear();
-					
-					Main.homepageSceneClass =  new HomepageScene();
+
+					Main.homepageSceneClass = new HomepageScene();
 					Main.window.setScene(Main.homepageSceneClass.getHomepageScene());
 
 				} else {

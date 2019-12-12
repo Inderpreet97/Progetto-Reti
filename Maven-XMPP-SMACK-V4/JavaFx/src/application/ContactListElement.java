@@ -33,11 +33,6 @@ class ContactListElement extends TilePane {
 		this.aContactNewMessages = new Label("");
 		this.aContactNewMessages.setPrefWidth(85);
 
-		// contat list element to return
-		// TODO Il TilePane deve occupare tutto il VBox che è il parent di TilePane
-		// https://docs.oracle.com/javafx/2/layout/size_align.htm
-		// https://amyfowlersblog.wordpress.com/2010/05/26/javafx-1-3-growing-shrinking-and-filling/
-		//
 		this.setBackground(backgroundColor);
 		this.setPadding(new Insets(10, 10, 10, 10));
 		this.setVgap(5);
@@ -85,7 +80,7 @@ class ContactListElement extends TilePane {
 
 				}
 				
-//				// TODO debug only
+//				// XXX debug print
 //				else {
 //					System.out.println("Chat with " + aContactUsername + " already open");
 //				}
