@@ -187,8 +187,14 @@ class HomepageScene {
 				} catch (Exception e) {
 
 				}
-
-				friendListTilePanes.add(new ContactListElement(name, username, presence));
+				
+				ContactListElement contactToAdd = new ContactListElement(name, username, presence);
+				if(App.hasNewMessagesWhileOffline(username)) {
+					contactToAdd.setNewMessagesNotification();
+				}
+				
+				friendListTilePanes.add(contactToAdd);
+				
 			});
 			
 			mainContent.getChildren().clear();

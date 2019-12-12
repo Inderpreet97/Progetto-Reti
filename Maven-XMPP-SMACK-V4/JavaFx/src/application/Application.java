@@ -8,7 +8,10 @@ import java.util.Stack;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.chat2.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -18,6 +21,7 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.offline.OfflineMessageManager;
 import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.ReportedData.Row;
 import org.jivesoftware.smackx.search.UserSearchManager;
@@ -58,6 +62,7 @@ public class Application {
 				configBuilder.setPort(XMPPServerPort);
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
+				configBuilder.setSendPresence(false);	// Permette di riceve i messaggi ricevuti mentre l'utente che si sta per loggare era offline
 				// configBuilder.enableDefaultDebugger();
 				connection = new XMPPTCPConnection(configBuilder.build());
 				connection.connect();
@@ -84,6 +89,9 @@ public class Application {
 
 				// Log into the server
 				connection.login(username, password);
+				
+				OfflineMessageListener();
+				
 				loggedUsername = username;
 				App.logged = true;
 
@@ -94,6 +102,7 @@ public class Application {
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
 				connection.sendStanza(presence);
+				
 				IncomingMessageListener();
 				updateFriendList();
 
@@ -215,6 +224,50 @@ public class Application {
 
 		}
 
+		public static void OfflineMessageListener() {
+			OfflineMessageManager mOfflineMessageManager = new OfflineMessageManager(connection);
+
+			try {
+				// Get the message size
+				
+				int size = mOfflineMessageManager.getMessageCount();
+				
+				if(size > 0) {
+					// Load all messages from the storage
+					List<Message> messages = mOfflineMessageManager.getMessages();
+					messages.forEach(message -> {
+						String senderUsername = message.getFrom().getLocalpartOrNull().toString();
+						
+						if (incomingMessages.containsKey(senderUsername)) {
+							incomingMessages.get(senderUsername).add(message);
+						} else {
+							incomingMessages.put(senderUsername, new Stack<Message>());
+							incomingMessages.get(senderUsername).add(message);
+						}
+					});
+					
+					mOfflineMessageManager.deleteMessages();
+				}
+				
+				
+				
+			} catch (NoResponseException | XMPPErrorException | NotConnectedException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		/**
+		 * 
+		 * @param senderUsername
+		 * @return
+		 */
+		public static Boolean hasNewMessagesWhileOffline(String senderUsername) {
+			if (incomingMessages.containsKey(senderUsername)) {
+				return true;
+			} 
+			return false;
+		}
+
 		public static void IncomingMessageListener() {
 			// Creating a listener for incoming messages
 			chatManager = ChatManager.getInstanceFor(connection);
@@ -222,7 +275,6 @@ public class Application {
 			chatManager.addIncomingListener(new IncomingChatMessageListener() {
 				public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
 					String senderUsername = from.getLocalpart().toString();
-
 					if (isChatOpen(senderUsername)) {
 						((ChatStage) Main.openChats.get(senderUsername)).putMessage(message.getBody());
 					} else {
@@ -263,6 +315,7 @@ public class Application {
 			});
 
 		}
+		
 
 		/**
 		 * 
@@ -291,18 +344,18 @@ public class Application {
 
 					if (!it.hasNext()) {
 						return false;
-						
+
 					} else {
 						boolean userFound = false;
 						while (it.hasNext()) {
 							Row row = it.next();
 							List<CharSequence> values = row.getValues("username");
-							
+
 							if (values.contains(App.loggedUsername)) {
 								return false;
 							}
-							
-							if (values.contains(friendUsername) ) {
+
+							if (values.contains(friendUsername)) {
 								return true;
 							}
 						}
@@ -353,11 +406,11 @@ public class Application {
 						while (it.hasNext()) {
 							Row row = it.next();
 							List<CharSequence> values = row.getValues("username");
-							
+
 							if (values.contains(App.loggedUsername)) {
 								return false;
 							}
-							
+
 							if (values.contains(friendUsername)) {
 
 								// Adds friend to friend list. The second parameter is the nickname, in this
@@ -368,7 +421,7 @@ public class Application {
 								roster.sendSubscriptionRequest(friendJid);
 								updateFriendList();
 								return true;
-							} 
+							}
 						}
 
 						if (!userFound) {
@@ -385,7 +438,7 @@ public class Application {
 				return false;
 			}
 		}
-		
+
 		/**
 		 * 
 		 * @return
@@ -410,7 +463,7 @@ public class Application {
 			// Return the collection of entries
 			return friendList;
 		}
-		
+
 		/**
 		 * 
 		 * @param friendUsername
@@ -427,7 +480,7 @@ public class Application {
 			}
 			return false;
 		}
-		
+
 		/**
 		 * 
 		 * @return
@@ -435,7 +488,7 @@ public class Application {
 		public static AbstractXMPPConnection getConnection() {
 			return connection;
 		}
-		
+
 		/**
 		 * 
 		 * @param connection
