@@ -72,7 +72,7 @@ public class Application {
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
 				configBuilder.setSendPresence(false); // Permette di riceve i messaggi ricevuti mentre l'utente che si
-														// sta per loggare era offline
+				// sta per loggare era offline
 				// configBuilder.enableDefaultDebugger();
 				connection = new XMPPTCPConnection(configBuilder.build());
 				connection.connect();
@@ -157,8 +157,6 @@ public class Application {
 				manager.createAccount(user, password); // Create the account
 				manager.sensitiveOperationOverInsecureConnection(false); // It does not allow to create a new account
 
-				// XXX Debug print
-				System.out.println("Account registrato correttamente");
 				return true;
 
 			} catch (XMPPException ex) {
@@ -300,48 +298,16 @@ public class Application {
 
 		private static void incomingSubscriptionListener() {
 			roster.addSubscribeListener(new SubscribeListener() {
-
-				SubscribeAnswer returnValue;
-
+				
 				@Override
 				public SubscribeAnswer processSubscribe(Jid from, Presence subscribeRequest) {
-
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-
-							String username = from.getLocalpartOrNull().toString();
-							Boolean requestAnswer = Main.homepageSceneClass.friendRequestAlert(username);
-
-							if (requestAnswer) {
-								returnValue = SubscribeAnswer.ApproveAndAlsoRequestIfRequired;
-
-								if (!roster.iAmSubscribedTo(from)) {
-									Platform.runLater(() -> {
-										try {
-
-											String name = Main.homepageSceneClass.friendNameRequest(username);
-											roster.createEntry(from.asBareJid(), name, null);
-
-											// Asking to get the status of new friend
-
-											roster.sendSubscriptionRequest(from.asBareJid());
-											updateFriendList();
-
-											// AGGIORANA LISTA AMICI UI
-											Main.homepageSceneClass.updateFriendListView();
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-
-									});
-								}
-							} else {
-								returnValue = SubscribeAnswer.Deny;
-							}
-						}
-					});
-					return returnValue;
+					try {
+					 	roster.createEntry(from.asBareJid(), from.getLocalpartOrNull().toString(), null);
+					 	roster.sendSubscriptionRequest(from.asBareJid());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return SubscribeAnswer.Approve;
 				}
 			});
 		}
@@ -405,7 +371,7 @@ public class Application {
 				@Override
 				public void presenceAvailable(FullJid address, Presence availablePresence) {
 					String senderUsername = address.getLocalpartOrNull().toString();
-					if(!senderUsername.equals(loggedUsername)) {
+					if (!senderUsername.equals(loggedUsername)) {
 						try {
 							Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
 								if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
@@ -441,8 +407,13 @@ public class Application {
 
 				@Override
 				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {
-					// XXX Debug
-					System.out.println("User subscribed");
+
+					App.updateFriendList();
+
+					Platform.runLater(() -> {
+						Main.homepageSceneClass.updateFriendListView();
+					});
+
 				}
 
 				@Override
@@ -581,6 +552,9 @@ public class Application {
 			// Updating the friend list
 			try {
 				roster = Roster.getInstanceFor(connection);
+				while (!roster.isLoaded()) {
+
+				}
 				friendList = roster.getEntries();
 				return true;
 			} catch (Exception ex) {
