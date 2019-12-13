@@ -167,7 +167,7 @@ class HomepageScene {
 
 	public void updateFriendListView() {
 		friendListTilePanes = new ArrayList<TilePane>();
-		
+
 		// Wait until roster get loaded
 		while (!App.roster.isLoaded()) {
 
@@ -177,7 +177,7 @@ class HomepageScene {
 		if (App.logged) {
 
 			App.getFriendList().forEach((entry) -> {
-				
+
 				String name = entry.getName();
 				String username = "";
 				Presence presence = App.roster.getPresence(entry.getJid());
@@ -187,40 +187,56 @@ class HomepageScene {
 				} catch (Exception e) {
 
 				}
-				
+
 				ContactListElement contactToAdd = new ContactListElement(name, username);
-				
-				if(App.hasNewMessagesWhileOffline(username)) {
+
+				if (App.hasNewMessagesWhileOffline(username)) {
 					contactToAdd.setNewMessagesNotification();
 				}
-				
-				if(presence.isAvailable()) {
+
+				if (presence.isAvailable()) {
 					contactToAdd.setOnline();
 				} else {
 					contactToAdd.setOffline();
 				}
-				
+
 				friendListTilePanes.add(contactToAdd);
-				
+
 			});
-			
+
 			mainContent.getChildren().clear();
 			mainContent.getChildren().addAll(friendListTilePanes);
 		}
 	}
 
 	public String friendNameRequest(String username) {
-		
-		TextInputDialog dialog = new TextInputDialog("name");
+
+		TextInputDialog dialog = new TextInputDialog(username);
 		dialog.setTitle("New Friend");
-		dialog.setHeaderText("Friend request received");
+		dialog.setHeaderText("Friend request from/for " + username);
 		dialog.setContentText("Please enter name of new friend:");
 
 		// Traditional way to get the response value.
 		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
-		    return result.get();
+		if (result.isPresent()) {
+			return result.get();
 		}
 		return username;
+	}
+
+	public Boolean friendRequestAlert(String username) {
+		System.out.println("Subscribe Request Received");
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Subscription Request");
+		alert.setHeaderText("Subscription Request from " + username);
+		alert.setContentText(username + " want to join buddy list");
+		// SubscribeAnswer returnValue;
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

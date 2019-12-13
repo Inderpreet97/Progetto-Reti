@@ -117,7 +117,7 @@ public class Application {
 				// Tutto questo pezzo di codice lo mettiamo in una funzione? Può tornare utile?
 				roster = Roster.getInstanceFor(connection);
 
-				roster.setSubscriptionMode(SubscriptionMode.accept_all);
+				roster.setSubscriptionMode(SubscriptionMode.manual);
 
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
@@ -301,33 +301,46 @@ public class Application {
 		private static void incomingSubscriptionListener() {
 			roster.addSubscribeListener(new SubscribeListener() {
 
+				SubscribeAnswer returnValue;
+
 				@Override
 				public SubscribeAnswer processSubscribe(Jid from, Presence subscribeRequest) {
-					// TODO fa qualcosa
 
-					Platform.runLater(() -> {
-						try {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+
 							String username = from.getLocalpartOrNull().toString();
-							
-							String name = Main.homepageSceneClass.friendNameRequest(username);
-							roster.createEntry(from.asBareJid(), name, null);
+							Boolean requestAnswer = Main.homepageSceneClass.friendRequestAlert(username);
 
-							// Asking to get the status of new friend
+							if (requestAnswer) {
+								returnValue = SubscribeAnswer.ApproveAndAlsoRequestIfRequired;
+								
+								Platform.runLater(() -> {
+									try {
+										
+										String name = Main.homepageSceneClass.friendNameRequest(username);
+										roster.createEntry(from.asBareJid(), name, null);
 
-							roster.sendSubscriptionRequest(from.asBareJid());
-							updateFriendList();
+										// Asking to get the status of new friend
 
-							// AGGIORAN LISTA AMICI UI
-							Main.homepageSceneClass.updateFriendListView();
-						} catch (Exception e) {
-							e.printStackTrace();
+										roster.sendSubscriptionRequest(from.asBareJid());
+										updateFriendList();
+
+										// AGGIORAN LISTA AMICI UI
+										Main.homepageSceneClass.updateFriendListView();
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+
+								});
+							} else {
+								returnValue = SubscribeAnswer.Deny;
+							}
 						}
-
 					});
-
-					return null;
+					return returnValue;
 				}
-
 			});
 		}
 
