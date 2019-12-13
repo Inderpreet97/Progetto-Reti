@@ -28,7 +28,7 @@ public class Main extends Application {
 
 			// Evento chiusura della finestra
 			window.setOnCloseRequest((event) -> {
-				if(App.getConnection() != null)
+				if(App.isConnected())
 				App.disconnect();
 
 				// Chiudi tutte le chat aperte

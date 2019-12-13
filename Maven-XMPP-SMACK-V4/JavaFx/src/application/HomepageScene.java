@@ -3,8 +3,6 @@ package application;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.jivesoftware.smack.packet.Presence;
-
 import application.Application.App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -94,6 +92,7 @@ class HomepageScene {
 
 		// Create Scene with BorderPane homepageLayout
 		homepageScene = new Scene(homepageLayout, 400, 400);
+		
 	}
 
 	private void searchUsername(String searchedUsername) {
@@ -181,13 +180,8 @@ class HomepageScene {
 
 				String name = entry.getName();
 				String username = "";
-				Presence presence = App.roster.getPresence(entry.getJid());
 
-				try {
-					username = entry.getJid().getLocalpartOrThrow().toString();
-				} catch (Exception e) {
-
-				}
+				username = entry.getJid().getLocalpartOrNull().toString();
 
 				ContactListElement contactToAdd = new ContactListElement(name, username);
 
@@ -195,18 +189,21 @@ class HomepageScene {
 					contactToAdd.setNewMessagesNotification();
 				}
 
-				if (presence.isAvailable()) {
-					contactToAdd.setOnline();
-				} else {
-					contactToAdd.setOffline();
-				}
-
+				contactToAdd.setOffline();
+				
+				// Update Status of contacts
+				App.updatePresence(contactToAdd);
+				
 				friendListTilePanes.add(contactToAdd);
 
 			});
-
+			
+			
+			
 			mainContent.getChildren().clear();
 			mainContent.getChildren().addAll(friendListTilePanes);
+			
+			
 		}
 	}
 

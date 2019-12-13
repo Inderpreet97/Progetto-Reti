@@ -15,6 +15,7 @@ import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.chat2.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
 import org.jivesoftware.smack.roster.PresenceEventListener;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.Roster.SubscriptionMode;
@@ -35,6 +36,7 @@ import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import javafx.application.Platform;
 
@@ -48,20 +50,24 @@ public class Application {
 		private static String XMPPDomain = "@messenger.unipr.it";
 		private static int XMPPServerPort = 5222;
 		private static AbstractXMPPConnection connection;
+		
+		// Variables
 		private static ChatManager chatManager;
-
+		private static HashMap<String, Chat> openChats = new HashMap<String, Chat>();
+		private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
+		public static Roster roster;
+		
 		// LoggedUser variables
 		public static String loggedUsername;
 		public static boolean logged = false;
 		private static Collection<RosterEntry> friendList;
 
-		private static HashMap<String, Chat> openChats = new HashMap<String, Chat>();
-		private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
-		public static Roster roster;
+		
 
 		/**
+		 * Create a connection with Server (TCP + XML Stream)
 		 * 
-		 * @return
+		 * @return	true if connection created successfully, false otherwise
 		 */
 		public static Boolean connect() {
 			configBuilder = XMPPTCPConnectionConfiguration.builder();
@@ -73,7 +79,7 @@ public class Application {
 				configBuilder.setXmppDomain(XMPPDomain);
 				configBuilder.setSendPresence(false); // Permette di riceve i messaggi ricevuti mentre l'utente che si
 				// sta per loggare era offline
-				// configBuilder.enableDefaultDebugger();
+				//configBuilder.enableDefaultDebugger();
 				connection = new XMPPTCPConnection(configBuilder.build());
 				connection.connect();
 				return true;
@@ -84,7 +90,7 @@ public class Application {
 		}
 
 		/**
-		 * 
+		 * Destroy the connection with Server (TCP + XML Stream)
 		 */
 		public static void disconnect() {
 			try {
@@ -98,10 +104,14 @@ public class Application {
 		}
 
 		/**
+		 * Attempt login with the given credentials, 
+		 * If loggin is successful retrieve offline messages it there are any, 
+		 * set roster, start incomingMessagesListener, start incomingPresenceListener
+		 * start incomingSubscriptionListener and update FriendList
 		 * 
 		 * @param username
 		 * @param password
-		 * @return
+		 * @return true logged in correctly, false otherwise
 		 */
 		public static Boolean login(String username, String password) {
 			try {
@@ -131,22 +141,23 @@ public class Application {
 
 				return true;
 			} catch (XMPPException ex) {
-				ex.printStackTrace();
+				// ex.printStackTrace();
 				connection.disconnect();
 				return false;
 
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				// ex.printStackTrace();
 				return false;
 			}
 
 		}
 
 		/**
+		 * Register a new user in the server with the given credentials
 		 * 
 		 * @param username
 		 * @param password
-		 * @return
+		 * @return true is registration is successful, false otherwise
 		 */
 		public static boolean registerUser(String username, String password) {
 			try {
@@ -170,34 +181,39 @@ public class Application {
 		}
 
 		/**
+		 * Start a chat a with the given username
 		 * 
 		 * @param username
-		 * @return
+		 * @return true if chat created successfully, false otherwise
 		 */
 		public static boolean CreateChat(String username) {
 
-			// Se la chat non è già aperta
+			// If the chat is not already is open
 			if (!openChats.containsKey(username)) {
 				try {
 					EntityBareJid jid = JidCreate.entityBareFrom(username + XMPPDomain);
 
 					Chat chat = chatManager.chatWith(jid);
-
+					
+					// add this chat to Open Chats HashMap
 					openChats.put(username, chat);
 
-					// New messages while i was online but not in chat
+					// print messages sent while the user was online but not in this chat
 					if (incomingMessages.containsKey(username)) {
 						incomingMessages.get(username).forEach(message -> {
 							((ChatStage) Main.openChats.get(username)).putMessage(message.getBody());
 						});
 						incomingMessages.remove(username);
 					}
-
+					
+					return true;
+					
 				} catch (Exception ex) {
 					ex.printStackTrace();
+					return false;
 				}
 			}
-			return false;
+			return true;
 		}
 
 		/**
@@ -233,10 +249,11 @@ public class Application {
 		}
 
 		/**
+		 * Send the given message to the given user
 		 * 
 		 * @param username
 		 * @param message
-		 * @return
+		 * @return true if message sent correctly, false otherwise
 		 */
 		public static boolean SendMessageTo(String username, String message) {
 			if (isChatOpen(username)) {
@@ -252,17 +269,32 @@ public class Application {
 		}
 
 		/**
+		 * Check if this user while it was offline has received messages from the given user
 		 * 
+		 * @param senderUsername
+		 * @return true it there are messages to read, false otherwise
+		 */
+		public static Boolean hasNewMessagesWhileOffline(String senderUsername) {
+			if (incomingMessages.containsKey(senderUsername)) {
+				return true;
+			}
+			return false;
+		}
+		
+		/**
+		 * If there are messages stored on server that the User didn't received because it 
+		 * was offline, thery retrieved from serve and added to the incomingMessages HashMap
+		 * ready to be print when the user will open the chat with the user who sent the messages
 		 */
 		private static void OfflineMessageListener() {
 			OfflineMessageManager mOfflineMessageManager = new OfflineMessageManager(connection);
 
 			try {
-				// Get the message size
-
+				// Get the number of messages on server
 				int size = mOfflineMessageManager.getMessageCount();
 
 				if (size > 0) {
+					
 					// Load all messages from the storage
 					List<Message> messages = mOfflineMessageManager.getMessages();
 					messages.forEach(message -> {
@@ -275,7 +307,8 @@ public class Application {
 							incomingMessages.get(senderUsername).add(message);
 						}
 					});
-
+					
+					// delete the messages from server
 					mOfflineMessageManager.deleteMessages();
 				}
 
@@ -285,25 +318,17 @@ public class Application {
 		}
 
 		/**
-		 * 
-		 * @param senderUsername
-		 * @return
+		 * Creats a listener for incoming Subscirption Presences, Accept them, add the sender of the subscription 
+		 * to the current user friend list, and subscribe current user to the presence of the sender 
 		 */
-		public static Boolean hasNewMessagesWhileOffline(String senderUsername) {
-			if (incomingMessages.containsKey(senderUsername)) {
-				return true;
-			}
-			return false;
-		}
-
 		private static void incomingSubscriptionListener() {
 			roster.addSubscribeListener(new SubscribeListener() {
-				
+
 				@Override
 				public SubscribeAnswer processSubscribe(Jid from, Presence subscribeRequest) {
 					try {
-					 	roster.createEntry(from.asBareJid(), from.getLocalpartOrNull().toString(), null);
-					 	roster.sendSubscriptionRequest(from.asBareJid());
+						roster.createEntry(from.asBareJid(), from.getLocalpartOrNull().toString(), null);
+						roster.sendSubscriptionRequest(from.asBareJid());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -313,7 +338,10 @@ public class Application {
 		}
 
 		/**
-		 * 
+		 * Creats a listener for incoming Messages, if the current user has the chat open with the sender
+		 * of the message the listener just print it on the chat. But if the chat is not open the listener
+		 * add the messages to an incoming messages HashMap ready to be printed when the user will open the
+		 * chat. The listener also set a flag to notify that there are some new messages from a specific user.
 		 */
 		private static void incomingMessageListener() {
 			// Creating a listener for incoming messages
@@ -323,6 +351,7 @@ public class Application {
 				public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
 					String senderUsername = from.getLocalpart().toString();
 					if (isChatOpen(senderUsername)) {
+						// Print the message on the open chat
 						((ChatStage) Main.openChats.get(senderUsername)).putMessage(message.getBody());
 					} else {
 
@@ -350,7 +379,10 @@ public class Application {
 								});
 							}
 						});
-
+						
+						/* Add the message to an HashMap ready to be printed when the use will open the chat
+						 * with the sender of the message
+						 */
 						if (incomingMessages.containsKey(senderUsername)) {
 							incomingMessages.get(senderUsername).add(message);
 						} else {
@@ -363,11 +395,16 @@ public class Application {
 		}
 
 		/**
-		 * 
+		 * Creats different listeners for different presence packets
 		 */
 		private static void incomingPresenceListener() {
 			roster.addPresenceEventListener(new PresenceEventListener() {
-
+				
+				/**
+				 * Listener for Presences of Available type
+				 * If the presence is not self sent, the method setOnline of ContactListElement is called
+				 * for the sender of the presence. setOnline() changes the printed status of the sender to "Online" 
+				 */
 				@Override
 				public void presenceAvailable(FullJid address, Presence availablePresence) {
 					String senderUsername = address.getLocalpartOrNull().toString();
@@ -387,6 +424,11 @@ public class Application {
 					}
 				}
 
+				/**
+				 * Listener for Presences of Unavailable type
+				 * If the presence is not self sent, the method setOffline of ContactListElement is called
+				 * for the sender of the presence. setOffline() changes the printed status of the sender to "Offline"
+				 */
 				@Override
 				public void presenceUnavailable(FullJid address, Presence presence) {
 
@@ -401,10 +443,18 @@ public class Application {
 					});
 				}
 
+				// Unset Listener
 				@Override
 				public void presenceError(Jid address, Presence errorPresence) {
 				}
-
+				
+				/**
+				 * Listener for Presences of type Subscriebed
+				 * If a user subscribed to the presence of the current user, the current user update
+				 * its Friend List View to show the new user, wwhich has been added automatically to
+				 * the friend list of the current user.
+				 * 
+				 */
 				@Override
 				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {
 
@@ -415,7 +465,8 @@ public class Application {
 					});
 
 				}
-
+				
+				// Unset Listener
 				@Override
 				public void presenceUnsubscribed(BareJid address, Presence unsubscribedPresence) {
 				}
@@ -423,24 +474,29 @@ public class Application {
 		}
 
 		/**
+		 * Search a user on the server
 		 * 
 		 * @param friendUsername
-		 * @return
+		 * @return true if the username exists on the server, false otherwise
 		 */
 		public static boolean searchFriendServer(String friendUsername) {
 			try {
+				// JabberID of the user to search
 				EntityBareJid friendJid = JidCreate.entityBareFrom(friendUsername + XMPPDomain);
-
+				
+				// The search service has a domain jabber id -> search.messenger.unipr.it
 				DomainBareJid searchService = JidCreate.domainBareFrom("search." + friendJid.asDomainBareJid());
-
+				
 				UserSearchManager search = new UserSearchManager(connection);
-
+				
+				// Retrieve from server the search form and the instructions to use it
 				Form searchForm = search.getSearchForm(searchService);
 				Form answerForm = searchForm.createAnswerForm();
-
-				answerForm.setAnswer("Username", true);
-				answerForm.setAnswer("search", friendUsername);
-
+				
+				answerForm.setAnswer("Username", true); // dove cercare la parola contenuta nel campo search
+				answerForm.setAnswer("search", friendUsername); // la parola da cercara
+				
+				// Execute the "query" and the saves the results in data
 				ReportedData data = search.getSearchResults(answerForm, searchService);
 
 				if (data != null) {
@@ -448,24 +504,26 @@ public class Application {
 					Iterator<Row> it = rows.iterator();
 
 					if (!it.hasNext()) {
+						/* If data has only one row, so there isn't a next row, it means that the data is 
+						 * incomplete
+						 */
 						return false;
 
 					} else {
-						boolean userFound = false;
+						// Explore the returned data
 						while (it.hasNext()) {
 							Row row = it.next();
 							List<CharSequence> values = row.getValues("username");
-
+							
+							// The search should not return the user who made the search
 							if (values.contains(loggedUsername)) {
 								return false;
 							}
-
+							
+							// User found
 							if (values.contains(friendUsername)) {
 								return true;
 							}
-						}
-						if (!userFound) {
-							return false;
 						}
 					}
 				}
@@ -477,9 +535,11 @@ public class Application {
 		}
 
 		/**
+		 * Search a user on the server and if it exists add it to the current user roster ("friend list")
+		 * and subscribe to his presence
 		 * 
 		 * @param friendUsername
-		 * @return
+		 * @return true user added correctly, false otherwise
 		 */
 		public static boolean addFriend(String friendUsername) {
 			// This function add a friend, true -> friend added, false -> user not found
@@ -507,7 +567,6 @@ public class Application {
 					if (!it.hasNext()) {
 						return false;
 					} else {
-						boolean userFound = false;
 						while (it.hasNext()) {
 							Row row = it.next();
 							List<CharSequence> values = row.getValues("username");
@@ -528,16 +587,11 @@ public class Application {
 								return true;
 							}
 						}
-
-						if (!userFound) {
-							return false;
-						}
 					}
-				} else { // Data is null
-					return false;
 				}
-
+				
 				return false;
+				
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return false;
@@ -545,13 +599,15 @@ public class Application {
 		}
 
 		/**
+		 * Updated the friend list
 		 * 
-		 * @return
+		 * @return true if updated correctly, false otherwise
 		 */
 		public static boolean updateFriendList() {
-			// Updating the friend list
 			try {
 				roster = Roster.getInstanceFor(connection);
+				
+				// Wait until the roster is fully loaded
 				while (!roster.isLoaded()) {
 
 				}
@@ -564,8 +620,9 @@ public class Application {
 		}
 
 		/**
+		 * Getter for friendlist
 		 * 
-		 * @return
+		 * @return Collection<RosterEntry>
 		 */
 		public static Collection<RosterEntry> getFriendList() {
 			updateFriendList();
@@ -574,9 +631,31 @@ public class Application {
 		}
 
 		/**
+		 * Gets the presence of the given contact and set it to its presence
+		 */
+		public static void updatePresence(ContactListElement contactToAdd) {
+			
+			EntityBareJid jid;
+			
+			try {
+				
+				jid = JidCreate.entityBareFrom(contactToAdd.getUsername() + XMPPDomain);
+				
+				if (App.roster.getPresence(jid).getType() == Type.available) {
+					contactToAdd.setOnline();
+				}
+			} catch (XmppStringprepException e) {
+				contactToAdd.setOffline();
+			}
+			
+			
+		}
+
+		/**
+		 * Check if the given username is present in the friendlist of the logged user
 		 * 
 		 * @param friendUsername
-		 * @return
+		 * @return true if present in list, false otherwise
 		 */
 		public static boolean checkIfUserInFriendList(String friendUsername) {
 			// This function check if a friend with that friendUsername is already in the
@@ -591,19 +670,17 @@ public class Application {
 		}
 
 		/**
+		 * Check if the connection to Openfire Server is set
 		 * 
-		 * @return
+		 * @return true if connected, false otherwise
 		 */
-		public static AbstractXMPPConnection getConnection() {
-			return connection;
-		}
-
-		/**
-		 * 
-		 * @param connection
-		 */
-		public static void setConnection(AbstractXMPPConnection connection) {
-			App.connection = connection;
+		public static Boolean isConnected() {
+			
+			if(connection != null) {
+				return true;
+			}
+			
+			return false;
 		}
 
 	}

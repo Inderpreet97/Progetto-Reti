@@ -24,7 +24,7 @@ class ChatStage extends Stage {
 		this.setTitle(destinationUsername);
 
 		this.setOnCloseRequest((event) -> {
-			if (App.getConnection() != null)
+			if (App.isConnected())
 				App.disconnect();
 		});
 
@@ -43,14 +43,16 @@ class ChatStage extends Stage {
 				if (e.getCode() == KeyCode.ENTER) {
 					String message = messageField.getText();
 					messageField.clear();
-					// Print on my Chat
-					if (textArea.getText().isEmpty()) {
-						textArea.appendText("You: " + message);
-					} else {
-						textArea.appendText("\nYou: " + message);
+					if(!message.isEmpty()) {
+						// Print on my Chat
+						if (textArea.getText().isEmpty()) {
+							textArea.appendText("You: " + message);
+						} else {
+							textArea.appendText("\nYou: " + message);
+						}
+						// Invia messaggio all'utente finale
+						App.SendMessageTo(destinationUsername, message);
 					}
-					// Invia messaggio all'utente finale
-					App.SendMessageTo(destinationUsername, message);
 					
 				} else {
 					// NOT IMPLEMENTED "Sta scrivendo"
