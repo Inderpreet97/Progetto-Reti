@@ -122,6 +122,10 @@ public class Application {
 				
 				// Offline message listener va chiamato prima di mandare il primo pacchetto di presenza online
 				OfflineMessageListener();
+				
+				// XXX SLEEP AFTER METHOD CALL
+				System.out.println("Sleep prima di roster, dopo chiama OfflineMessage..");
+				TimeUnit.SECONDS.sleep(60);
 
 				loggedUsername = username;
 				logged = true;
@@ -278,10 +282,6 @@ public class Application {
 		private static void OfflineMessageListener() throws InterruptedException {
 			
 			OfflineMessageManager mOfflineMessageManager = new OfflineMessageManager(connection);
-			
-			// XXX SLEEP OFFLINE MESSAGES MANAGER
-			System.out.println("Sleep After Offline Messages Manager request 60s");
-			TimeUnit.SECONDS.sleep(60);
 			
 			try {
 				// Get the message size
