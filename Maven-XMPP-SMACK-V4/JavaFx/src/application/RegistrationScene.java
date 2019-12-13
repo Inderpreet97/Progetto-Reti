@@ -150,7 +150,7 @@ class RegistrationScene {
 				passwordFieldChoose.clear();
 				passwordFieldConfirm.clear();
 				actiontarget.setFill(Color.FIREBRICK);
-				actiontarget.setText("Passwords are NOT equal");
+				actiontarget.setText("Passwords are not equal");
 			}
 			
 		} else {
