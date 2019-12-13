@@ -45,7 +45,7 @@ public class Application {
 		
 		// Config Server - Connection
 		private static XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
-		private static String XMPPServerAddress = "160.78.246.44";
+		private static String XMPPServerAddress = "localhost";
 		private static String XMPPDomain = "@messenger.unipr.it";
 		private static int XMPPServerPort = 5222;
 		private static AbstractXMPPConnection connection;
@@ -79,8 +79,8 @@ public class Application {
 				connection.connect();
 				
 				// XXX SLEEP AFTER CONNECT 
-				System.out.println("Sleep After Connect 5s");
-				TimeUnit.SECONDS.sleep(5);
+				System.out.println("Sleep After Connect 10s");
+				TimeUnit.SECONDS.sleep(10);
 				
 				
 				return true;
@@ -116,6 +116,11 @@ public class Application {
 				// Log into the server
 				connection.login(username, password);
 
+				// XXX SLEEP LOGIN
+				System.out.println("Sleep After login 10s");
+				TimeUnit.SECONDS.sleep(10);
+				
+				// Offline message listener va chiamato prima di mandare il primo pacchetto di presenza online
 				OfflineMessageListener();
 
 				loggedUsername = username;
@@ -123,12 +128,20 @@ public class Application {
 
 				// Tutto questo pezzo di codice lo mettiamo in una funzione? Può tornare utile?
 				roster = Roster.getInstanceFor(connection);
+				
+				// XXX SLEEP REQUEST FOR ROSTER
+				System.out.println("Sleep Request for Roster 5s");
+				TimeUnit.SECONDS.sleep(60);
 
 				roster.setSubscriptionMode(SubscriptionMode.manual);
 
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
 				connection.sendStanza(presence);
+				
+				// XXX SLEEP after Online presence
+				System.out.println("Sleep Online presence 5s");
+				TimeUnit.SECONDS.sleep(5);
 
 				incomingMessageListener();
 				incomingPresenceListener();
@@ -259,19 +272,34 @@ public class Application {
 		}
 
 		/**
+		 * @throws InterruptedException 
 		 * 
 		 */
-		private static void OfflineMessageListener() {
+		private static void OfflineMessageListener() throws InterruptedException {
+			
 			OfflineMessageManager mOfflineMessageManager = new OfflineMessageManager(connection);
-
+			
+			// XXX SLEEP OFFLINE MESSAGES MANAGER
+			System.out.println("Sleep After Offline Messages Manager request 60s");
+			TimeUnit.SECONDS.sleep(60);
+			
 			try {
 				// Get the message size
 
 				int size = mOfflineMessageManager.getMessageCount();
+				
+				// XXX SLEEP OFFLINE MESSAGES Count
+				System.out.println("Sleep After Offline Message Count 60s");
+				TimeUnit.SECONDS.sleep(60);
 
 				if (size > 0) {
 					// Load all messages from the storage
 					List<Message> messages = mOfflineMessageManager.getMessages();
+					
+					// XXX SLEEP OFFLINE MESSAGES REQUEST
+					System.out.println("Sleep After Offline Messages request 5s");
+					TimeUnit.SECONDS.sleep(30);
+					
 					messages.forEach(message -> {
 						String senderUsername = message.getFrom().getLocalpartOrNull().toString();
 
@@ -284,6 +312,10 @@ public class Application {
 					});
 
 					mOfflineMessageManager.deleteMessages();
+					
+					// XXX SLEEP OFFLINE MESSAGES DELETE
+					System.out.println("Sleep After Offline Messages DELETE 5s");
+					TimeUnit.SECONDS.sleep(30);
 				}
 
 			} catch (NoResponseException | XMPPErrorException | NotConnectedException | InterruptedException e) {
