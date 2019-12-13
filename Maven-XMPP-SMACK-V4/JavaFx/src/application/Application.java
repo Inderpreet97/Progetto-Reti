@@ -10,6 +10,7 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.chat2.*;
@@ -19,6 +20,7 @@ import org.jivesoftware.smack.roster.PresenceEventListener;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.Roster.SubscriptionMode;
 import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smack.roster.SubscribeListener;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
@@ -43,7 +45,7 @@ public class Application {
 
 		// Config Server - Connection
 		private static XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
-		private static String XMPPServerAddress = "localhost";
+		private static String XMPPServerAddress = "160.78.220.51";
 		private static String XMPPDomain = "@messenger.unipr.it";
 		private static int XMPPServerPort = 5222;
 		private static AbstractXMPPConnection connection;
@@ -116,12 +118,15 @@ public class Application {
 				roster = Roster.getInstanceFor(connection);
 
 				roster.setSubscriptionMode(SubscriptionMode.accept_all);
+				
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
 				connection.sendStanza(presence);
 				
-				IncomingMessageListener();
+				incomingMessageListener();
 				incomingPresenceListener();
+				incomingSubscriptionListener();
+				
 				updateFriendList();
 
 				return true;
@@ -295,10 +300,28 @@ public class Application {
 			return false;
 		}
 		
+		private static void incomingSubscriptionListener() {
+			roster.addSubscribeListener(new SubscribeListener() {
+
+				@Override
+				public SubscribeAnswer processSubscribe(Jid from, Presence subscribeRequest) {
+					// TODO fa qualcosa
+					try {
+						roster.sendSubscriptionRequest(from.asBareJid());
+					} catch (NotLoggedInException | NotConnectedException | InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return null;
+				}
+				
+			});
+		}
+		
 		/**
 		 * 
 		 */
-		private static void IncomingMessageListener() {
+		private static void incomingMessageListener() {
 			// Creating a listener for incoming messages
 			chatManager = ChatManager.getInstanceFor(connection);
 
