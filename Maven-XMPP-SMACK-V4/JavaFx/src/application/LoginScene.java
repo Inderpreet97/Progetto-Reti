@@ -69,7 +69,7 @@ class LoginScene {
 		actiontarget = new Text();
 		grid.add(actiontarget, 1, 5);
 
-		userTextField.setOnKeyReleased((event) -> {
+		userTextField.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				attemptLogin();
 			}

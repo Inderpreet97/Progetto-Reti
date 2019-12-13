@@ -315,25 +315,27 @@ public class Application {
 
 							if (requestAnswer) {
 								returnValue = SubscribeAnswer.ApproveAndAlsoRequestIfRequired;
-								
-								Platform.runLater(() -> {
-									try {
-										
-										String name = Main.homepageSceneClass.friendNameRequest(username);
-										roster.createEntry(from.asBareJid(), name, null);
 
-										// Asking to get the status of new friend
+								if (!roster.iAmSubscribedTo(from)) {
+									Platform.runLater(() -> {
+										try {
 
-										roster.sendSubscriptionRequest(from.asBareJid());
-										updateFriendList();
+											String name = Main.homepageSceneClass.friendNameRequest(username);
+											roster.createEntry(from.asBareJid(), name, null);
 
-										// AGGIORAN LISTA AMICI UI
-										Main.homepageSceneClass.updateFriendListView();
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
+											// Asking to get the status of new friend
 
-								});
+											roster.sendSubscriptionRequest(from.asBareJid());
+											updateFriendList();
+
+											// AGGIORANA LISTA AMICI UI
+											Main.homepageSceneClass.updateFriendListView();
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+
+									});
+								}
 							} else {
 								returnValue = SubscribeAnswer.Deny;
 							}
@@ -402,21 +404,21 @@ public class Application {
 
 				@Override
 				public void presenceAvailable(FullJid address, Presence availablePresence) {
+					String senderUsername = address.getLocalpartOrNull().toString();
+					if(!senderUsername.equals(loggedUsername)) {
+						try {
+							Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
+								if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
 
-					try {
-						String senderUsername = address.getLocalpartOrNull().toString();
-						Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
-							if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
-
-								Platform.runLater(() -> {
-									((ContactListElement) tilePane).setOnline();
-								});
-							}
-						});
-					} catch (Exception ex) {
-						ex.printStackTrace();
+									Platform.runLater(() -> {
+										((ContactListElement) tilePane).setOnline();
+									});
+								}
+							});
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 					}
-
 				}
 
 				@Override
@@ -439,6 +441,8 @@ public class Application {
 
 				@Override
 				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {
+					// XXX Debug
+					System.out.println("User subscribed");
 				}
 
 				@Override
@@ -576,6 +580,7 @@ public class Application {
 		public static boolean updateFriendList() {
 			// Updating the friend list
 			try {
+				roster = Roster.getInstanceFor(connection);
 				friendList = roster.getEntries();
 				return true;
 			} catch (Exception ex) {
