@@ -31,6 +31,7 @@ class LoginScene {
 	private final Text actiontarget;
 
 	LoginScene() {
+		
 		grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
