@@ -63,7 +63,6 @@ public class Application {
 		private static Collection<RosterEntry> friendList;
 
 		
-
 		/**
 		 * Create a connection with Server (TCP + XML Stream)
 		 * 
