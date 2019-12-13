@@ -58,7 +58,7 @@ public class Application {
 		private static HashMap<String, Chat> openChats = new HashMap<String, Chat>();
 		private static HashMap<String, Stack<Message>> incomingMessages = new HashMap<String, Stack<Message>>();
 		public static Roster roster;
-		
+
 		/**
 		 * 
 		 * @return
@@ -71,7 +71,8 @@ public class Application {
 				configBuilder.setPort(XMPPServerPort);
 				configBuilder.setHost(XMPPServerAddress);
 				configBuilder.setXmppDomain(XMPPDomain);
-				configBuilder.setSendPresence(false);	// Permette di riceve i messaggi ricevuti mentre l'utente che si sta per loggare era offline
+				configBuilder.setSendPresence(false); // Permette di riceve i messaggi ricevuti mentre l'utente che si
+														// sta per loggare era offline
 				// configBuilder.enableDefaultDebugger();
 				connection = new XMPPTCPConnection(configBuilder.build());
 				connection.connect();
@@ -81,7 +82,7 @@ public class Application {
 				return false;
 			}
 		}
-		
+
 		/**
 		 * 
 		 */
@@ -95,7 +96,7 @@ public class Application {
 				ex.printStackTrace();
 			}
 		}
-		
+
 		/**
 		 * 
 		 * @param username
@@ -107,9 +108,9 @@ public class Application {
 
 				// Log into the server
 				connection.login(username, password);
-				
+
 				OfflineMessageListener();
-				
+
 				loggedUsername = username;
 				logged = true;
 
@@ -117,15 +118,15 @@ public class Application {
 				roster = Roster.getInstanceFor(connection);
 
 				roster.setSubscriptionMode(SubscriptionMode.accept_all);
-				
+
 				Presence presence = new Presence(Presence.Type.available);
 				presence.setStatus("Online");
 				connection.sendStanza(presence);
-				
+
 				incomingMessageListener();
 				incomingPresenceListener();
 				incomingSubscriptionListener();
-				
+
 				updateFriendList();
 
 				return true;
@@ -140,7 +141,7 @@ public class Application {
 			}
 
 		}
-		
+
 		/**
 		 * 
 		 * @param username
@@ -169,7 +170,7 @@ public class Application {
 			}
 
 		}
-		
+
 		/**
 		 * 
 		 * @param username
@@ -251,7 +252,7 @@ public class Application {
 			}
 			return false;
 		}
-		
+
 		/**
 		 * 
 		 */
@@ -260,15 +261,15 @@ public class Application {
 
 			try {
 				// Get the message size
-				
+
 				int size = mOfflineMessageManager.getMessageCount();
-				
-				if(size > 0) {
+
+				if (size > 0) {
 					// Load all messages from the storage
 					List<Message> messages = mOfflineMessageManager.getMessages();
 					messages.forEach(message -> {
 						String senderUsername = message.getFrom().getLocalpartOrNull().toString();
-						
+
 						if (incomingMessages.containsKey(senderUsername)) {
 							incomingMessages.get(senderUsername).add(message);
 						} else {
@@ -276,17 +277,15 @@ public class Application {
 							incomingMessages.get(senderUsername).add(message);
 						}
 					});
-					
+
 					mOfflineMessageManager.deleteMessages();
 				}
-				
-				
-				
+
 			} catch (NoResponseException | XMPPErrorException | NotConnectedException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		/**
 		 * 
 		 * @param senderUsername
@@ -295,38 +294,43 @@ public class Application {
 		public static Boolean hasNewMessagesWhileOffline(String senderUsername) {
 			if (incomingMessages.containsKey(senderUsername)) {
 				return true;
-			} 
+			}
 			return false;
 		}
-		
+
 		private static void incomingSubscriptionListener() {
 			roster.addSubscribeListener(new SubscribeListener() {
 
 				@Override
 				public SubscribeAnswer processSubscribe(Jid from, Presence subscribeRequest) {
 					// TODO fa qualcosa
-					try {
-						
-						String username = from.getLocalpartOrNull().toString();
-						String name = Main.homepageSceneClass.friendNameRequest(username);
-						
-						roster.createEntry(from.asBareJid(), name, null);
 
-						// Asking to get the status of new friend
-						roster.sendSubscriptionRequest(from.asBareJid());
-						updateFriendList();
-						
-						// AGGIORAN LISTA AMICI UI
-						Main.homepageSceneClass.updateFriendListView();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					Platform.runLater(() -> {
+						try {
+							String username = from.getLocalpartOrNull().toString();
+							
+							String name = Main.homepageSceneClass.friendNameRequest(username);
+							roster.createEntry(from.asBareJid(), name, null);
+
+							// Asking to get the status of new friend
+
+							roster.sendSubscriptionRequest(from.asBareJid());
+							updateFriendList();
+
+							// AGGIORAN LISTA AMICI UI
+							Main.homepageSceneClass.updateFriendListView();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+					});
+
 					return null;
 				}
-				
+
 			});
 		}
-		
+
 		/**
 		 * 
 		 */
@@ -376,16 +380,16 @@ public class Application {
 				}
 			});
 		}
-		
+
 		/**
 		 * 
 		 */
 		private static void incomingPresenceListener() {
-			roster.addPresenceEventListener(new PresenceEventListener(){
+			roster.addPresenceEventListener(new PresenceEventListener() {
 
 				@Override
 				public void presenceAvailable(FullJid address, Presence availablePresence) {
-					
+
 					try {
 						String senderUsername = address.getLocalpartOrNull().toString();
 						Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
@@ -399,12 +403,12 @@ public class Application {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
-					
+
 				}
 
 				@Override
 				public void presenceUnavailable(FullJid address, Presence presence) {
-					
+
 					String senderUsername = address.getLocalpartOrNull().toString();
 					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
 						if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
@@ -417,16 +421,18 @@ public class Application {
 				}
 
 				@Override
-				public void presenceError(Jid address, Presence errorPresence) {}
+				public void presenceError(Jid address, Presence errorPresence) {
+				}
 
 				@Override
-				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {}
+				public void presenceSubscribed(BareJid address, Presence subscribedPresence) {
+				}
 
 				@Override
-				public void presenceUnsubscribed(BareJid address, Presence unsubscribedPresence) {}
+				public void presenceUnsubscribed(BareJid address, Presence unsubscribedPresence) {
+				}
 			});
 		}
-		
 
 		/**
 		 * 
