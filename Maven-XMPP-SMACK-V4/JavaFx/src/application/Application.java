@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
@@ -41,10 +42,10 @@ import javafx.application.Platform;
 public class Application {
 
 	static class App {
-
+		
 		// Config Server - Connection
 		private static XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
-		private static String XMPPServerAddress = "160.78.220.51";
+		private static String XMPPServerAddress = "160.78.246.44";
 		private static String XMPPDomain = "@messenger.unipr.it";
 		private static int XMPPServerPort = 5222;
 		private static AbstractXMPPConnection connection;
@@ -76,6 +77,12 @@ public class Application {
 				// configBuilder.enableDefaultDebugger();
 				connection = new XMPPTCPConnection(configBuilder.build());
 				connection.connect();
+				
+				// XXX SLEEP AFTER CONNECT 
+				System.out.println("Sleep After Connect 5s");
+				TimeUnit.SECONDS.sleep(5);
+				
+				
 				return true;
 			} catch (Exception ex) {
 				ex.printStackTrace();
