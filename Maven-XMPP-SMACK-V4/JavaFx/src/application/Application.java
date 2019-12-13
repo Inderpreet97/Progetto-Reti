@@ -44,7 +44,7 @@ public class Application {
 
 		// Config Server - Connection
 		private static XMPPTCPConnectionConfiguration.Builder configBuilder = XMPPTCPConnectionConfiguration.builder();
-		private static String XMPPServerAddress = "160.78.220.51";
+		private static String XMPPServerAddress = "localhost";
 		private static String XMPPDomain = "@messenger.unipr.it";
 		private static int XMPPServerPort = 5222;
 		private static AbstractXMPPConnection connection;
