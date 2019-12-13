@@ -4,10 +4,12 @@ import application.Application.App;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -80,7 +82,7 @@ class RegistrationScene {
 		actiontarget = new Text();
 		grid.add(actiontarget, 1, 6);
 
-		userTextField.setOnKeyReleased((event) -> {
+		userTextField.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				attemptRegistration();
 			}
@@ -129,7 +131,7 @@ class RegistrationScene {
 					if (App.registerUser(username, passwordChoose)) {
 						
 						passwordFieldChoose.clear();
-						passwordFieldConfirm.clear();
+						passwordFieldConfirm.clear();						
 						Main.loginSceneClass = new LoginScene();
 						Main.window.setScene(Main.loginSceneClass.getLoginScene());
 

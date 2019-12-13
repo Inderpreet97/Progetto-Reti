@@ -31,6 +31,7 @@ class LoginScene {
 	private final Text actiontarget;
 
 	LoginScene() {
+		
 		grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
@@ -69,7 +70,7 @@ class LoginScene {
 		actiontarget = new Text();
 		grid.add(actiontarget, 1, 5);
 
-		userTextField.setOnKeyReleased((event) -> {
+		userTextField.setOnKeyPressed((event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				attemptLogin();
 			}
