@@ -10,7 +10,6 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.chat2.*;
@@ -307,9 +306,19 @@ public class Application {
 				public SubscribeAnswer processSubscribe(Jid from, Presence subscribeRequest) {
 					// TODO fa qualcosa
 					try {
+						
+						String username = from.getLocalpartOrNull().toString();
+						String name = Main.homepageSceneClass.friendNameRequest(username);
+						
+						roster.createEntry(from.asBareJid(), name, null);
+
+						// Asking to get the status of new friend
 						roster.sendSubscriptionRequest(from.asBareJid());
-					} catch (NotLoggedInException | NotConnectedException | InterruptedException e) {
-						// TODO Auto-generated catch block
+						updateFriendList();
+						
+						// AGGIORAN LISTA AMICI UI
+						Main.homepageSceneClass.updateFriendListView();
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					return null;
@@ -377,15 +386,20 @@ public class Application {
 				@Override
 				public void presenceAvailable(FullJid address, Presence availablePresence) {
 					
-					String senderUsername = address.getLocalpartOrNull().toString();
-					Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
-						if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
+					try {
+						String senderUsername = address.getLocalpartOrNull().toString();
+						Main.homepageSceneClass.getFriendListTilePanes().forEach(tilePane -> {
+							if (((ContactListElement) tilePane).getUsername().equals(senderUsername)) {
 
-							Platform.runLater(() -> {
-								((ContactListElement) tilePane).setOnline();
-							});
-						}
-					});
+								Platform.runLater(() -> {
+									((ContactListElement) tilePane).setOnline();
+								});
+							}
+						});
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					
 				}
 
 				@Override

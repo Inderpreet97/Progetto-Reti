@@ -14,6 +14,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -206,5 +207,20 @@ class HomepageScene {
 			mainContent.getChildren().clear();
 			mainContent.getChildren().addAll(friendListTilePanes);
 		}
+	}
+
+	public String friendNameRequest(String username) {
+		
+		TextInputDialog dialog = new TextInputDialog("name");
+		dialog.setTitle("New Friend");
+		dialog.setHeaderText("Friend request received");
+		dialog.setContentText("Please enter name of new friend:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+		    return result.get();
+		}
+		return username;
 	}
 }
