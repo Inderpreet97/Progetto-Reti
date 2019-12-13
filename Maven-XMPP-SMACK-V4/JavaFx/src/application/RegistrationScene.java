@@ -65,7 +65,7 @@ class RegistrationScene {
 		grid.add(passwordFieldConfirm, 1, 3);
 
 		// Sign Up Button
-		btn = new Button("Sign UP");
+		btn = new Button("Sign up");
 		hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn);

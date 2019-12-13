@@ -26,7 +26,8 @@ class HomepageScene {
 	private TextField searchText;
 
 	HomepageScene() {
-
+		// Set Window New Title
+		Main.window.setTitle("Unipr Messenger - " + App.loggedUsername);
 		Background backgroundColor = new Background(
 				new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY));
 
